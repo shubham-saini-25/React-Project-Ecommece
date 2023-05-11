@@ -1,23 +1,32 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
+import { HomeProducts } from './constants/data';
+import Products from './components/Products';
+import { Row } from 'react-bootstrap';
+import Home from './components/Home';
 import './App.css';
 
 function App() {
+  const [Product, setProduct] = useState([]);
+
+  useEffect(() => {
+    setProduct(HomeProducts);
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <section id='home'>
+        <Home />
+      </section>
+      <section id='products'>
+        <Row style={{ marginLeft: "auto", marginRight: 'auto' }} >
+          {Product.map((item, idx) => {
+            return (
+              <Products key={idx} product={item} />
+            )
+          })}
+        </Row>
+      </section>
+      <br />
     </div>
   );
 }
