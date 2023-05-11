@@ -18,7 +18,6 @@ function Login() {
     const validateForm = () => {
         return email.length > 0 && password.length > 0;
     }
-    console.log(accessToken, 'dddddddddddd')
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -35,9 +34,9 @@ function Login() {
             localStorage.setItem('JWT_Token', res.data.token);
             setLoginBtnText(<i className="fa fa-spinner fa-spin"></i>);
             toast.success(res.data['message']);
+            setAccessToken(res.data.token);
             setEmail('');
             setPassword('');
-            setAccessToken(res.data.token);
             setTimeout(() => { navigate('/') }, 2000);
         } catch (err) {
             setLoginBtnText('Login')

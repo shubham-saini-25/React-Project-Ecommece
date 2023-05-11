@@ -9,8 +9,6 @@ import ItemContext from "../context/ItemContext";
 function HomeNavbar() {
     const { accessToken, setAccessToken } = useContext(ItemContext);
     const { totalUniqueItems } = useCart();
-    console.log(accessToken, 'ffff');
-    console.log(localStorage.getItem('JWT_Token'), 'sssss');
 
     const removeToken = () => {
         localStorage.removeItem('JWT_Token');
