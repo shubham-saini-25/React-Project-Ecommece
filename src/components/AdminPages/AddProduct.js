@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
+import ItemContext from '../../context/ItemContext';
 import axios from 'axios';
 
 const AddProduct = () => {
+    const { authUserId } = useContext(ItemContext);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
@@ -20,8 +22,9 @@ const AddProduct = () => {
 
         formData.append('name', name);
         formData.append('price', price);
-        formData.append('description', description);
         formData.append('image', image);
+        formData.append('description', description);
+        formData.append('createdBy', authUserId);
 
         try {
             const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/add-products`, formData);

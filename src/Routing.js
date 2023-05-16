@@ -12,7 +12,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import AddToCart from './components/products/AddToCart';
 import PaymentInvoice from './components/payment/PaymentInvoice';
 import AddProduct from './components/AdminPages/AddProduct';
-import AdminProducts from './components/AdminPages/AdminProducts';
+import ViewProducts from './components/AdminPages/ViewProducts';
 import EditProduct from './components/AdminPages/EditProduct';
 
 // const Routing = () => {
@@ -93,9 +93,9 @@ const router = createBrowserRouter([
         ),
     },
     {
-        path: "/get-products",
+        path: "/view-products",
         element: (
-            <AdminProducts />
+            <ViewProducts />
         ),
     },
     {

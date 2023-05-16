@@ -98,6 +98,7 @@ app.post("/api/login", async (req, res) => {
             const response = {
                 'status': 200,
                 'token': token,
+                'userId': user._id,
                 'message': 'User Logged In Succesfully!',
             }
 
@@ -152,6 +153,7 @@ app.post("/api/add-products", upload.single('image'), async (req, res) => {
         const price = parseFloat(req.body.price);
         const description = req.body.description;
         const image = req.file.originalname;
+        const createdBy = req.body.createdBy;
 
         // Validate product information input
         if (!(name && description && price && image)) {
@@ -159,7 +161,7 @@ app.post("/api/add-products", upload.single('image'), async (req, res) => {
         }
 
         const newProduct = await Product.create({
-            name, description, price, image,
+            name, description, price, image, createdBy
         });
 
         const response = {
@@ -219,18 +221,25 @@ app.post("/api/update-product/:id", upload.single('image'), async (req, res) => 
 });
 
 // API for getting all products
-app.get('/api/get-products', async (req, res) => {
+app.get('/api/get-products/:id', async (req, res) => {
     try {
-        const products = await Product.find();
+        const userId = req.params.id;
 
-        if (products === []) {
-            return res.status(400).send("No Product Found");
+        const products = await Product.find({ createdBy: userId });
+
+        if (!products) {
+            const response = {
+                'status': 404,
+                'message': 'No Product Found',
+            };
+
+            return res.send(response);
         }
 
         const response = {
             'status': 200,
             'products': products,
-            'message': 'Data retrieved successfully!',
+            // 'message': 'Data retrieved successfully!',
         }
 
         res.send(response);

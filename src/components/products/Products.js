@@ -61,9 +61,9 @@ const Products = (props) => {
                 </div>
                 <div className='card-footer'>
                     <div className='cartButton'>
-                        {accessToken === '' ?
+                        {accessToken === null ?
                             <button className={`btn btn-${cartBtnClass} mt-3 border border-1 border-dark mb-3`}
-                                onClick={() => { checkLogin() }}>
+                                onClick={() => { items === undefined ? navigate(`/items/${link}`) : checkLogin() }}>
                                 {items !== undefined ? `${cartBtnText}` : 'Show More'}
                             </button>
                             :

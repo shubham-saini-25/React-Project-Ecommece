@@ -33,7 +33,7 @@ const AddToCart = () => {
             setSecret(clientSecret);
         }
         fetchData();
-    }, []);
+    }, [cartTotal]);
 
     const handleShow = () => {
         setShow(true);
@@ -51,7 +51,7 @@ const AddToCart = () => {
                     <Col md="10">
                         <div className="d-flex justify-content-between mb-4">
                             <h3 className="fs-1 fw-normal text-black mt-3">Shopping Cart ({totalUniqueItems})</h3>
-                            <Button className='h-25 mt-3' onClick={() => { emptyCart(); toast.info('Your cart is already empty') }} >Empty Cart</Button>
+                            <Button className='h-25 mt-4' onClick={() => { emptyCart(); toast.info('Your cart is already empty') }} >Empty Cart</Button>
                         </div>
                         <hr />
                         <div className='d-flex justify-content-center fw-bold' style={{ height: "40rem" }}>
@@ -61,7 +61,7 @@ const AddToCart = () => {
                 </Row>
             </Container>
         );
-    };
+    }
 
     return (
         <>
@@ -71,7 +71,7 @@ const AddToCart = () => {
                     <Col md="10">
                         <div className="d-flex justify-content-between mb-4 cursor-pointer">
                             <h3 className="fs-1 fw-normal text-center text-black mt-3">Shopping Cart ({totalUniqueItems})</h3>
-                            <Button className='h-25 mt-3' onClick={() => { emptyCart(); toast.success('Your cart is cleared successfully') }} >Empty Cart</Button>
+                            <Button className='h-25 mt-4' onClick={() => { emptyCart(); toast.success('Your cart is cleared successfully') }}>Empty Cart</Button>
                         </div>
                         <hr />
 

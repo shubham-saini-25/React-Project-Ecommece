@@ -10,6 +10,7 @@ import axios from 'axios';
 
 function Login() {
     const { accessToken, setAccessToken } = useContext(ItemContext);
+    const { setAuthUserId } = useContext(ItemContext);
     const [loginBtnText, setLoginBtnText] = useState('Login');
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
@@ -32,9 +33,11 @@ function Login() {
         try {
             const res = await axios.post(url, userData, { headers: headers });
             localStorage.setItem('JWT_Token', res.data.token);
+            localStorage.setItem('authId', res.data.userId);
             setLoginBtnText(<i className="fa fa-spinner fa-spin"></i>);
             toast.success(res.data['message']);
             setAccessToken(res.data.token);
+            setAuthUserId(res.data.userId);
             setEmail('');
             setPassword('');
             setTimeout(() => { navigate('/') }, 2000);

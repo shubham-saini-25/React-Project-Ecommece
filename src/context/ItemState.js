@@ -3,10 +3,12 @@ import { useState } from 'react'
 import ItemContext from './ItemContext';
 
 const ItemState = (props) => {
-    const [user, setUser] = useState({});
     const [cartItems, setCartItems] = useState([]);
     const [search, setSearch] = useState('');
     const [secret, setSecret] = useState('');
+
+    const authId = localStorage.getItem('authId');
+    const [authUserId, setAuthUserId] = useState(authId);
 
     let token = localStorage.getItem('JWT_Token');
     const [accessToken, setAccessToken] = useState(token);
@@ -15,7 +17,7 @@ const ItemState = (props) => {
         <ItemContext.Provider value={
             {
                 accessToken, setAccessToken,
-                user, setUser,
+                authUserId, setAuthUserId,
                 cartItems, setCartItems,
                 search, setSearch,
                 secret, setSecret
