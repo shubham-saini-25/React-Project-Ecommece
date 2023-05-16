@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { HomeProducts } from './constants/data';
-import Products from './components/Products';
+import Products from './components/products/Products';
 import { Row } from 'react-bootstrap';
-import Home from './components/Home';
+import Home from './components/main/Home';
 import './App.css';
 
 function App() {

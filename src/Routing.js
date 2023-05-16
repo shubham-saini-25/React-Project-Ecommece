@@ -1,16 +1,19 @@
 import React from 'react';
 import App from './App';
-import Login from './components/Login';
-import Register from './components/Register';
-import ForgetPassword from './components/FogetPassword';
+import Login from './components/Auth/Login';
+import Register from './components/Auth/Register';
+import ForgetPassword from './components/Auth/FogetPassword';
 import { BrowserRouter, Route, RouterProvider, Routes, createBrowserRouter } from "react-router-dom";
-import ContactForm from './components/Contact';
-import About from './components/About';
+import ContactForm from './components/main/Contact';
+import About from './components/main/About';
 import Item from './components/products/Item';
-import HomeNavbar from "./components/Navbar";
+import HomeNavbar from "./components/main/Navbar";
 import { BrowserRouter as Router } from "react-router-dom";
 import AddToCart from './components/products/AddToCart';
-import PaymentForm from './components/PaymentForm';
+import PaymentInvoice from './components/payment/PaymentInvoice';
+import AddProduct from './components/AdminPages/AddProduct';
+import AdminProducts from './components/AdminPages/AdminProducts';
+import EditProduct from './components/AdminPages/EditProduct';
 
 // const Routing = () => {
 //     <BrowserRouter>
@@ -69,6 +72,30 @@ const router = createBrowserRouter([
         path: "/cart-items",
         element: (
             <AddToCart />
+        ),
+    },
+    {
+        path: "/payment-done",
+        element: (
+            <PaymentInvoice />
+        ),
+    },
+    {
+        path: "/add-products",
+        element: (
+            <AddProduct />
+        ),
+    },
+    {
+        path: "/edit-products",
+        element: (
+            <EditProduct />
+        ),
+    },
+    {
+        path: "/get-products",
+        element: (
+            <AdminProducts />
         ),
     },
     {

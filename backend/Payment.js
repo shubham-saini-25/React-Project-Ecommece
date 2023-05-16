@@ -10,13 +10,26 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 app.post('/api/process-payment', async (req, res) => {
     try {
-        const { amount, currency, email } = req.body;
+        const { amount, currency } = req.body;
+        console.log(req.body);
 
         const paymentIntent = await stripe.paymentIntents.create({
             amount,
             currency,
-            receipt_email: email,
+            // receipt_email: email,
         });
+
+        // const paymentIntent = await stripe.paymentIntents.create({
+        //     amount,
+        //     currency,
+        //     receipt_email: 'example@example.com',
+        //     billing_details: {
+        //         name: 'John Doe',
+        //     },
+        //     automatic_payment_methods: {
+        //         enabled: true,
+        //     },
+        // });
 
         res.send({ clientSecret: paymentIntent.client_secret });
     } catch (err) {

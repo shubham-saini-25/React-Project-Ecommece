@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import Products from '../Products';
+import Products from './Products';
 import { Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { HomeProducts, Laptops, Tablets, Mobiles } from '../../constants/data';

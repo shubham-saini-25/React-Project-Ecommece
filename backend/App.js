@@ -6,11 +6,22 @@ const bcrypt = require('bcrypt');
 const cors = require("cors");
 const auth = require("./middleware/Auth");
 
+// module for uploading product image 
+const multer = require('multer');
+const path = require('path');
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => { cb(null, 'uploads/') },
+    filename: (req, file, cb) => { cb(null, file.originalname) },
+});
+const upload = multer({ storage });
+
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(express.static(path.resolve("./uploads")));
 
 const User = require("./models/user");
+const Product = require("./models/product");
 
 app.post("/api/welcome", auth, (req, res) => {
     res.status(200).send("Welcome 🙌 ");
@@ -19,7 +30,7 @@ app.post("/api/welcome", auth, (req, res) => {
 // API for User Registration
 app.post("/api/register", async (req, res) => {
     try {
-        const { name, email, phoneNumber, password } = req.body;
+        const { name, email, purpose, phoneNumber, password } = req.body;
 
         // Validate user input
         if (!(name && email && phoneNumber && password)) {
@@ -37,7 +48,7 @@ app.post("/api/register", async (req, res) => {
 
         // Create user in our database
         const user = await User.create({
-            name, email: email.toLowerCase(), phoneNumber, password: encryptedPassword,
+            name, email: email.toLowerCase(), purpose, phoneNumber, password: encryptedPassword,
         });
 
         // Create JWT token
@@ -46,6 +57,7 @@ app.post("/api/register", async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                purpose: user.purpose,
                 phoneNumber: user.phoneNumber,
                 password: user.password,
 
@@ -124,6 +136,101 @@ app.post("/api/update-password", async (req, res) => {
             'status': 200,
             'token': token,
             'message': 'Password Changed Successfully!',
+        }
+
+        res.send(response);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// API for Add New Products
+app.post("/api/add-products", upload.single('image'), async (req, res) => {
+    try {
+        const name = req.body.name;
+        const price = parseFloat(req.body.price);
+        const description = req.body.description;
+        const image = req.file.originalname;
+
+        // Validate product information input
+        if (!(name && description && price && image)) {
+            res.status(400).send("All input is required");
+        }
+
+        const newProduct = await Product.create({
+            name, description, price, image,
+        });
+
+        const response = {
+            'status': 200,
+            'product': newProduct,
+            'message': 'New Product Added successfully!',
+        }
+
+        res.send(response);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// API for Update Product
+app.post("/api/update-product/:id", upload.single('image'), async (req, res) => {
+    try {
+        const productId = req.params.id;
+
+        // Retrieve the existing product from the database
+        const product = await Product.findById(productId);
+
+        // Check if the product exists
+        if (!product) {
+            return res.status(404).send('Product not found');
+        }
+
+        // Update the product fields with the new values (if provided)
+        if (req.body.name) {
+            product.name = req.body.name;
+        }
+        if (req.body.price) {
+            product.price = parseFloat(req.body.price);
+        }
+        if (req.body.description) {
+            product.description = req.body.description;
+        }
+        if (req.file) {
+            product.image = req.file.originalname;
+        }
+
+        // Save the updated product
+        await product.save();
+
+        const response = {
+            status: 200,
+            product: product,
+            message: 'Product updated successfully!',
+        };
+
+        res.send(response);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// API for getting all products
+app.get('/api/get-products', async (req, res) => {
+    try {
+        const products = await Product.find();
+
+        if (products === []) {
+            return res.status(400).send("No Product Found");
+        }
+
+        const response = {
+            'status': 200,
+            'products': products,
+            'message': 'Data retrieved successfully!',
         }
 
         res.send(response);

@@ -6,6 +6,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: linear-gradient(50deg, rgb(206, 116, 167), rgb(128, 182, 236));
   background-size: 100% 100vh;
+  background-repeat: no-repeat;
 }
 
 code {
@@ -204,4 +205,13 @@ p {
   background: radial-gradient(circle, rgb(206, 116, 167) 0%, rgb(128, 182, 236) 100%);
   box-shadow: 13px 13px 20px #53575a, -13px -13px 20px #4f4a4a;
   border-radius: 10px;
+}
+
+.invoice {
+  box-shadow: 13px 13px 20px #53575a, -13px -13px 20px #4f4a4a;
+  background-color: white;
+  border-radius: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
 }

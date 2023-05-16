@@ -1,17 +1,41 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Card, Row, Col, Container, Form } from "react-bootstrap";
-import { useCart } from "react-use-cart";
 import Modal from 'react-bootstrap/Modal';
+import { useCart } from "react-use-cart";
 import { ToastContainer, toast } from 'react-toastify';
-import PaymentForm from '../PaymentForm';
+import ItemContext from '../../context/ItemContext';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import PaymentForm from '../payment/PaymentForm';
+import axios from 'axios';
+
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 const AddToCart = () => {
-    const { isEmpty, totalUniqueItems, items, updateItemQuantity, removeItem, cartTotal } = useCart();
+    const { isEmpty, totalUniqueItems, items, updateItemQuantity, removeItem, cartTotal, emptyCart } = useCart();
+    const { secret, setSecret } = useContext(ItemContext);
     const [show, setShow] = useState(false);
 
     const SHIPPING_CHARGES = 20;
 
-    const handleShow = async () => {
+    useEffect(() => {
+        async function fetchData() {
+            const url = `${process.env.REACT_APP_API_URL}/api/process-payment`;
+            const data = {
+                amount: cartTotal * 100,
+                currency: 'usd',
+            }
+            const headers = {
+                "Content-Type": "application/json",
+            };
+
+            const { clientSecret } = await axios.post(url, data, { headers: headers }).then((response) => response.data);
+            setSecret(clientSecret);
+        }
+        fetchData();
+    }, []);
+
+    const handleShow = () => {
         setShow(true);
     }
 
@@ -25,8 +49,9 @@ const AddToCart = () => {
                 <ToastContainer />
                 <Row className="itemCart justify-content-center align-items-center h-100">
                     <Col md="10">
-                        <div className="mb-4 cursor-pointer">
-                            <h3 className="fs-1 fw-normal text-center text-black mt-3">Shopping Cart ({totalUniqueItems})</h3>
+                        <div className="d-flex justify-content-between mb-4">
+                            <h3 className="fs-1 fw-normal text-black mt-3">Shopping Cart ({totalUniqueItems})</h3>
+                            <Button className='h-25 mt-3' onClick={() => { emptyCart(); toast.info('Your cart is already empty') }} >Empty Cart</Button>
                         </div>
                         <hr />
                         <div className='d-flex justify-content-center fw-bold' style={{ height: "40rem" }}>
@@ -44,8 +69,9 @@ const AddToCart = () => {
                 <ToastContainer />
                 <Row className="itemCart justify-content-center align-items-center h-100">
                     <Col md="10">
-                        <div className="mb-4 cursor-pointer">
+                        <div className="d-flex justify-content-between mb-4 cursor-pointer">
                             <h3 className="fs-1 fw-normal text-center text-black mt-3">Shopping Cart ({totalUniqueItems})</h3>
+                            <Button className='h-25 mt-3' onClick={() => { emptyCart(); toast.success('Your cart is cleared successfully') }} >Empty Cart</Button>
                         </div>
                         <hr />
 
@@ -100,11 +126,13 @@ const AddToCart = () => {
                 </Row>
             </Container>
 
-            <Modal size="md" show={show} onHide={handleHide}>
+            <Modal size="lg" show={show} onHide={handleHide} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton onClick={handleHide}>
                     <Modal.Title>Payment Gateway...</Modal.Title>
                 </Modal.Header>
-                <PaymentForm totalPrice={cartTotal} shippingCharges={SHIPPING_CHARGES} />
+                <Elements stripe={stripePromise} options={{ clientSecret: secret }}>
+                    <PaymentForm totalPrice={cartTotal} shippingCharges={SHIPPING_CHARGES} />
+                </Elements>
             </Modal>
         </>
     );
