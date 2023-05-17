@@ -10,11 +10,14 @@ import { ToastContainer, toast } from 'react-toastify';
 function HomeNavbar() {
     const { accessToken, setAccessToken } = useContext(ItemContext);
     const { search, setSearch } = useContext(ItemContext);
+    const { setAuthUserId } = useContext(ItemContext);
     const { totalUniqueItems } = useCart();
 
     const removeToken = () => {
         localStorage.removeItem('JWT_Token');
+        localStorage.removeItem('AuthId');
         setAccessToken('');
+        setAuthUserId('');
     };
 
     const onClick = (e) => {

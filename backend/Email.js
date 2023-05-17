@@ -8,6 +8,11 @@ app.use(cors());
 app.use(express.json());
 app.listen(5000, () => console.log("Server Running..."));
 
+const fs = require('fs');
+const ejs = require('ejs');
+// Read the EJS template file
+const mailTemplate = fs.readFileSync('./Email-Templates/contactMail.ejs', 'utf-8');
+
 const contactEmail = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
     port: process.env.MAIL_PORT,
@@ -26,17 +31,20 @@ contactEmail.verify(function (error, success) {
 });
 
 app.post("/send-mail", (req, res) => {
-    const name = req.body.name;
-    const email = req.body.email;
-    const message = req.body.message;
+
+    const dynamicData = {
+        name: req.body.name,
+        email: req.body.email,
+        message: req.body.message
+    };
+
+    const filledTemplate = ejs.render(mailTemplate, dynamicData);
 
     const mail = {
         from: process.env.MAIL_FROM_ADDRESS,
         to: "shubham@gmail.com",
-        subject: `New mail from ${name}`,
-        html: `<p>Name: ${name}</p>
-             <p>Email: ${email}</p>
-             <p>Message: ${message}</p>`,
+        subject: `contact us query mail`,
+        html: filledTemplate,
     };
 
     contactEmail.sendMail(mail, (error) => {

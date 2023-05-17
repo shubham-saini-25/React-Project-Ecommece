@@ -17,7 +17,7 @@ function ContactForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        setFormBtnStatus('Submitting...')
+        setFormBtnStatus('Sending...')
 
         const response = await fetch(`${process.env.REACT_APP_API_URL}/send-mail`, {
             method: 'POST',
@@ -28,13 +28,13 @@ function ContactForm() {
         });
 
         const data = await response.json();
-        console.log(data);
 
         if (response) {
             toast.success("Mail sent succesfully!");
             setName("");
             setEmail("");
             setMessage("");
+            setFormBtnStatus('Send');
         }
     }
 

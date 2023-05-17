@@ -9,6 +9,7 @@ const auth = require("./middleware/Auth");
 // module for uploading product image 
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const storage = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, 'uploads/') },
     filename: (req, file, cb) => { cb(null, file.originalname) },
@@ -158,8 +159,18 @@ app.post("/api/add-products", upload.single('image'), async (req, res) => {
         // Validate product information input
         if (!(name && description && price && image)) {
             res.status(400).send("All input is required");
+            return; // Return early to prevent further execution
         }
 
+        // Check if the product with the same name already exists
+        const existingProduct = await Product.findOne({ name });
+
+        if (existingProduct) {
+            res.status(400).send("Product with the same name already exists");
+            return; // Return early to prevent further execution
+        }
+
+        // add new product in the database
         const newProduct = await Product.create({
             name, description, price, image, createdBy
         });
@@ -177,7 +188,7 @@ app.post("/api/add-products", upload.single('image'), async (req, res) => {
     }
 });
 
-// API for Update Product
+// API for Update Product by ID
 app.post("/api/update-product/:id", upload.single('image'), async (req, res) => {
     try {
         const productId = req.params.id;
@@ -217,6 +228,30 @@ app.post("/api/update-product/:id", upload.single('image'), async (req, res) => 
     } catch (err) {
         console.log(err);
         res.status(500).send('Internal Server Error');
+    }
+});
+
+// API for deleting a product by ID
+app.delete('/api/delete-product/:id', async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const deleteProduct = await Product.findByIdAndDelete(productId);
+
+        if (!deleteProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Delete the associated image file
+        fs.unlink(`uploads/${deleteProduct.image}`, (err) => {
+            if (err) {
+                console.error(err);
+            }
+        });
+
+        res.status(200).json({ message: 'Product deleted successfully!' });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err.message });
     }
 });
 

@@ -3,7 +3,7 @@ import { Button, Card, Form, Modal } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 
-const EditProduct = (props) => {
+const UpdateProduct = (props) => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
@@ -72,4 +72,4 @@ const EditProduct = (props) => {
     );
 }
 
-export default EditProduct;
+export default UpdateProduct;

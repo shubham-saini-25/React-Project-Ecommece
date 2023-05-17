@@ -2,7 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Container, Button, Modal } from 'react-bootstrap';
 import ItemContext from '../../context/ItemContext';
-import EditProduct from './EditProduct';
+import EditProduct from './UpdateProduct';
+import Swal from 'sweetalert2';
 import axios from 'axios';
 
 const ViewProducts = () => {
@@ -29,6 +30,26 @@ const ViewProducts = () => {
             toast.error(err.response.data)
         }
     };
+
+    const deleteProduct = (itemId) => {
+        try {
+            Swal.fire({
+                title: 'Are you sure you want to delete this product?',
+                showConfirmButton: true,
+                showCancelButton: true,
+                confirmButtonText: "Delete",
+                cancelButtonText: "Cancel",
+                icon: 'warning',
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const result = await axios.delete(`${process.env.REACT_APP_API_URL}/api/delete-product/${itemId}`);
+                    toast.success(result.data.message);
+                }
+            });
+        } catch (err) {
+            toast.error(err.response.data)
+        }
+    }
 
     useEffect(() => {
         handleSubmit();
@@ -67,7 +88,7 @@ const ViewProducts = () => {
                                     <td>
                                         <div className='d-flex justify-content-center fa-2x'>
                                             <Button className='fa fa-pencil text-primary bg-transparent border-0' onClick={() => handleShow(item._id)}></Button>
-                                            <Button className='fa fa-trash text-danger bg-transparent border-0'></Button>
+                                            <Button className='fa fa-trash text-danger bg-transparent border-0' onClick={() => deleteProduct(item._id)}></Button>
                                         </div>
                                     </td>
                                 </tr>

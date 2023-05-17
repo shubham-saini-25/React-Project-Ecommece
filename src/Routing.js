@@ -13,7 +13,7 @@ import AddToCart from './components/products/AddToCart';
 import PaymentInvoice from './components/payment/PaymentInvoice';
 import AddProduct from './components/AdminPages/AddProduct';
 import ViewProducts from './components/AdminPages/ViewProducts';
-import EditProduct from './components/AdminPages/EditProduct';
+import UpdateProduct from './components/AdminPages/UpdateProduct';
 
 // const Routing = () => {
 //     <BrowserRouter>
@@ -87,9 +87,9 @@ const router = createBrowserRouter([
         ),
     },
     {
-        path: "/edit-products",
+        path: "/update-products",
         element: (
-            <EditProduct />
+            <UpdateProduct />
         ),
     },
     {
