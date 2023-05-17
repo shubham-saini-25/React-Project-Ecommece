@@ -14,7 +14,6 @@ const fs = require('fs');
 let randomImageNumber;
 setInterval(function () {
     randomImageNumber = Math.floor(Math.random() * 9999999);
-    console.log(randomImageNumber);
 }, 1500);
 
 const storage = multer.diskStorage({
