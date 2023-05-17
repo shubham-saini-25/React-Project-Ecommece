@@ -10,12 +10,12 @@ const PaymentForm = (props) => {
     const stripe = useStripe();
     const elements = useElements();
     const navigate = useNavigate();
-    const { emptyCart } = useCart();
-
+    const { emptyCart, cartTotal } = useCart();
     const [customerInfo, setCustomerInfo] = useState('');
-    const [email, setEmail] = useState('');
 
-    const totalAmount = (props.totalPrice + props.shippingCharges).toFixed(2);
+    const totalAmount = (cartTotal + props.shippingCharges).toFixed(2);
+
+    const [payBtnText, setPayBtnText] = useState('Make Payment');
 
     const addressOptions = {
         mode: 'shipping',
@@ -33,22 +33,28 @@ const PaymentForm = (props) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        setPayBtnText(<i className="fa fa-spinner fa-spin"></i>);
         const result = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                return_url: 'http://localhost:3000/payment-done',
+                return_url: 'http://localhost:3000/payment-invoice',
             },
         });
 
         if (result.error) {
             console.error(result.error);
             toast.error(result.error.message);
+            setPayBtnText('Make Payment');
         } else {
             Swal.fire({
                 title: 'Payment done successfully!',
                 text: 'Thank you for your purchase!',
-                icon: 'success'
-            }).then(() => { navigate('/payment-done') });
+                icon: 'success',
+            }).then(() => {
+                navigate('/payment-invoice', {
+                    userInfo: customerInfo,
+                })
+            });
         }
     };
 
@@ -61,7 +67,7 @@ const PaymentForm = (props) => {
                         <Card.Header>
                             <div className="text-center">
                                 <h5>Shipping and Payment details</h5>
-                                {/* <img src="http://surl.li/gwolo" width={150} alt="cardsImg"></img> */}
+                                <img src="http://surl.li/gwolo" width={150} alt="cardsImg"></img>
                             </div>
                         </Card.Header>
                         <Card.Body>
@@ -71,12 +77,31 @@ const PaymentForm = (props) => {
                                 </Col>
                                 <Col md={6}>
                                     <PaymentElement />
+                                    <hr />
+                                    <div className='table-responsive text-center mt-3'>
+                                        <table className="table table-bordered border-light">
+                                            <thead>
+                                                <tr>
+                                                    <td>Sub Total:</td>
+                                                    <td>${cartTotal}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Shipping:</td>
+                                                    <td>{props.shippingCharges > 0 ? `$${props.shippingCharges.toFixed(2)}` : 'Free'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Total:</th>
+                                                    <th>${totalAmount}</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
                                 </Col>
                             </Row>
                         </Card.Body>
                         <Card.Footer>
                             <Button type='submit' disabled={!stripe} className='btn btn-primary d-flex mx-auto fw-bold'>
-                                Make Payment (${totalAmount})
+                                {payBtnText}
                             </Button>
                         </Card.Footer>
                     </Card>

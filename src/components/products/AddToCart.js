@@ -14,15 +14,22 @@ const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 const AddToCart = () => {
     const { isEmpty, totalUniqueItems, items, updateItemQuantity, removeItem, cartTotal, emptyCart } = useCart();
     const { secret, setSecret } = useContext(ItemContext);
+    const [shippingCharges, setShippingCharges] = useState(0);
     const [show, setShow] = useState(false);
 
-    const SHIPPING_CHARGES = 20;
-
     useEffect(() => {
+
+        if (cartTotal < 500) {
+            setShippingCharges(99);
+        } else {
+            setShippingCharges(0);
+        }
+
+        console.log(shippingCharges);
         async function fetchData() {
             const url = `${process.env.REACT_APP_API_URL}/api/process-payment`;
             const data = {
-                amount: cartTotal * 100,
+                amount: (cartTotal + shippingCharges) * 100,
                 currency: 'usd',
             }
             const headers = {
@@ -33,7 +40,7 @@ const AddToCart = () => {
             setSecret(clientSecret);
         }
         fetchData();
-    }, [cartTotal]);
+    }, [shippingCharges]);
 
     const handleShow = () => {
         setShow(true);
@@ -131,7 +138,7 @@ const AddToCart = () => {
                     <Modal.Title>Payment Gateway...</Modal.Title>
                 </Modal.Header>
                 <Elements stripe={stripePromise} options={{ clientSecret: secret }}>
-                    <PaymentForm totalPrice={cartTotal} shippingCharges={SHIPPING_CHARGES} />
+                    <PaymentForm shippingCharges={shippingCharges} />
                 </Elements>
             </Modal>
         </>

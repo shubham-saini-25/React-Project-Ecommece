@@ -75,7 +75,7 @@ const router = createBrowserRouter([
         ),
     },
     {
-        path: "/payment-done",
+        path: "/payment-invoice",
         element: (
             <PaymentInvoice />
         ),

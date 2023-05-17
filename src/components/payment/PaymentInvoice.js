@@ -10,6 +10,8 @@ const PaymentInvoice = () => {
     const [email, setEmail] = useState('');
     const [invoiceNumber, setInvoiceNumber] = useState('');
     const { items, cartTotal } = useCart();
+    const [customerInfo, setCustomerInfo] = useState('');
+    const paymentIntentId = new URLSearchParams(window.location.search).get('payment_intent');
 
     let current = new Date();
     let date = current.toLocaleString([], { hour12: true });
@@ -17,7 +19,35 @@ const PaymentInvoice = () => {
     useEffect(() => {
         let num = 99999999;
         setInvoiceNumber(Math.floor(Math.random() * num));
-    }, []);
+
+        const fetchCustomerDetails = async () => {
+            try {
+                // Load the Stripe SDK with your publishable key
+                const stripe = require('stripe')(process.env.REACT_APP_STRIPE_SECRET_KEY);
+
+                // Retrieve the payment intent from the Stripe API
+                const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+                // Access the Customer and Shipping details from the payment intent
+                const customer = paymentIntent.shipping;
+                const customerDetails = {
+                    name: customer.name,
+                    phone: customer.phone,
+                    line1: customer.address.line1,
+                    line2: customer.address.line2,
+                    city: customer.address.city,
+                    state: customer.address.state,
+                    country: customer.address.country,
+                    postal_code: customer.address.postal_code,
+                };
+
+                setCustomerInfo(customerDetails);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchCustomerDetails();
+    }, [paymentIntentId]);
 
     const handleShow = () => {
         setShow(true);
@@ -59,33 +89,48 @@ const PaymentInvoice = () => {
                     </div>
                 </div>
                 <hr />
-                <div className='row'>
-                    <div className='col mx-5'>
-                        <h4>Bill from:</h4>
-                        <p>HestaBit Technologies</p>
-                        <p>Sector 63, Noida, India</p>
-                        <p>+91 9897969594</p>
-                    </div>
-
-                    <div className='col'>
-                        <h4>Bill to:</h4>
-                        <p>Dear Customer</p>
-                        <p>In the World</p>
-                        <p>+49 8673543256</p>
-                    </div>
+                <div className="table-responsive d-flex justify-content-center align-middle">
+                    <table className="table table-bordered align-middle w-75">
+                        <thead>
+                            <tr className='fs-4'>
+                                <th>Bill from:</th>
+                                <th>Bill to:</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>HestaBit Technologies</td>
+                                <td>{customerInfo.name}</td>
+                            </tr>
+                            <tr>
+                                <td>Sector 63, Noida, India</td>
+                                <td>
+                                    {customerInfo.line1}, {customerInfo.line2}, <br />
+                                    {customerInfo.city}, {customerInfo.state}, {customerInfo.country},
+                                    {customerInfo.postal_code}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>+91 9090909090</td>
+                                <td>{customerInfo.phone}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div className="table-responsive">
-                    <table className="table table-bordered">
+                <div className="table-responsive d-flex justify-content-center">
+                    <table className="table table-bordered w-75">
                         <thead>
                             <tr>
+                                <th>S.No.</th>
                                 <th>Item</th>
                                 <th>Quantity</th>
                                 <th>Price</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {items.map((item) => (
+                            {items.map((item, idx) => (
                                 <tr key={item.id}>
+                                    <td>{idx + 1}</td>
                                     <td>{item.name}</td>
                                     <td>{item.quantity}</td>
                                     <td>${item.quantity * item.price}</td>
