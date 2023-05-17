@@ -25,11 +25,10 @@ const AddToCart = () => {
             setShippingCharges(0);
         }
 
-        console.log(shippingCharges);
         async function fetchData() {
             const url = `${process.env.REACT_APP_API_URL}/api/process-payment`;
             const data = {
-                amount: (cartTotal + shippingCharges) * 100,
+                amount: parseInt(cartTotal + shippingCharges) * 100,
                 currency: 'usd',
             }
             const headers = {

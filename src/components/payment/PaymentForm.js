@@ -11,7 +11,6 @@ const PaymentForm = (props) => {
     const elements = useElements();
     const navigate = useNavigate();
     const { emptyCart, cartTotal } = useCart();
-    const [customerInfo, setCustomerInfo] = useState('');
 
     const totalAmount = (cartTotal + props.shippingCharges).toFixed(2);
 
@@ -45,16 +44,6 @@ const PaymentForm = (props) => {
             console.error(result.error);
             toast.error(result.error.message);
             setPayBtnText('Make Payment');
-        } else {
-            Swal.fire({
-                title: 'Payment done successfully!',
-                text: 'Thank you for your purchase!',
-                icon: 'success',
-            }).then(() => {
-                navigate('/payment-invoice', {
-                    userInfo: customerInfo,
-                })
-            });
         }
     };
 
@@ -73,7 +62,7 @@ const PaymentForm = (props) => {
                         <Card.Body>
                             <Row>
                                 <Col md={6}>
-                                    <AddressElement options={addressOptions} onChange={(e) => setCustomerInfo(e.value.address)} />
+                                    <AddressElement options={addressOptions} />
                                 </Col>
                                 <Col md={6}>
                                     <PaymentElement />
