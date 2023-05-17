@@ -10,9 +10,16 @@ const auth = require("./middleware/Auth");
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+
+let randomImageNumber;
+setInterval(function () {
+    randomImageNumber = Math.floor(Math.random() * 9999999);
+    console.log(randomImageNumber);
+}, 1500);
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, 'uploads/') },
-    filename: (req, file, cb) => { cb(null, file.originalname) },
+    filename: (req, file, cb) => { cb(null, file.originalname.replace(file.originalname, randomImageNumber + file.originalname)) },
 });
 const upload = multer({ storage });
 
@@ -153,7 +160,7 @@ app.post("/api/add-products", upload.single('image'), async (req, res) => {
         const name = req.body.name;
         const price = parseFloat(req.body.price);
         const description = req.body.description;
-        const image = req.file.originalname;
+        const image = req.file.originalname.replace(req.file.originalname, randomImageNumber + req.file.originalname);
         const createdBy = req.body.createdBy;
 
         // Validate product information input
@@ -212,7 +219,7 @@ app.post("/api/update-product/:id", upload.single('image'), async (req, res) => 
             product.description = req.body.description;
         }
         if (req.file) {
-            product.image = req.file.originalname;
+            product.image = req.file.originalname.replace(req.file.originalname, randomImageNumber + req.file.originalname);;
         }
 
         // Save the updated product
