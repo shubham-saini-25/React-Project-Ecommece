@@ -200,7 +200,13 @@ p {
   top: -20px;
 }
 
-.product {
+.admin {
+  background: linear-gradient(rgb(242, 182, 216), rgb(178, 207, 236));
+  box-shadow: 13px 13px 20px #53575a, -13px -13px 20px #4f4a4a;
+  border-radius: 10px;
+}
+
+.admin {
   background: linear-gradient(rgb(242, 182, 216), rgb(178, 207, 236));
   box-shadow: 13px 13px 20px #53575a, -13px -13px 20px #4f4a4a;
   border-radius: 10px;

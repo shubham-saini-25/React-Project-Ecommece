@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Container, Button, Modal } from 'react-bootstrap';
 import ItemContext from '../../context/ItemContext';
-import EditProduct from './UpdateProduct';
+import UpdateProduct from './UpdateProduct';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
@@ -57,7 +57,7 @@ const ViewProducts = () => {
 
     return (
         <>
-            <Container className="product mt-5 h-100 bg-light rounded-4">
+            <Container className="admin mt-5 h-100 bg-light rounded-4">
                 <ToastContainer />
                 <div className="d-flex justify-content-center">
                     <h3 className="fs-1 fw-normal text-black mt-4">Product List</h3>
@@ -102,7 +102,7 @@ const ViewProducts = () => {
                 <Modal.Header closeButton onClick={handleHide}>
                     <Modal.Title className='fs-2 mx-auto px-5'>Update Products</Modal.Title>
                 </Modal.Header>
-                {selectedItemId && <EditProduct product={product} itemId={selectedItemId} />}
+                {selectedItemId && <UpdateProduct product={product} itemId={selectedItemId} />}
             </Modal>
         </>
     );

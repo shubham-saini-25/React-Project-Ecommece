@@ -34,6 +34,28 @@ app.post("/api/welcome", auth, (req, res) => {
     res.status(200).send("Welcome 🙌 ");
 });
 
+// API for get the total users count
+app.get("/api/get-user-count", async (req, res) => {
+    try {
+        const totalUserCount = await User.countDocuments();
+        res.status(200).json({ totalUserCount });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// API for get the total products count
+app.get("/api/get-product-count", async (req, res) => {
+    try {
+        const totalProductCount = await Product.countDocuments();
+        res.status(200).json({ totalProductCount });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 // API for User Registration
 app.post("/api/register", async (req, res) => {
     try {
@@ -150,6 +172,57 @@ app.post("/api/update-password", async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(500).send('Internal Server Error');
+    }
+});
+
+// API for getting all customer details
+app.get('/api/get-users', async (req, res) => {
+    try {
+        const user = await User.find();
+
+        if (!user) {
+            res.status(404).send('User Not Found');
+        }
+
+        res.status(200).json({ user });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// API for getting one customer details
+app.get('/api/get-user/:id', async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        const user = await User.find({ _id: userId });
+
+        if (!user) {
+            res.status(404).send('User Not Found');
+        }
+
+        res.status(200).json({ user });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// API for deleting a user by ID
+app.delete('/api/delete-user/:id', async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const deleteUser = await User.findByIdAndDelete(userId);
+
+        if (!deleteUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'User deleted successfully!' });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err.message });
     }
 });
 

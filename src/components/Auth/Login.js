@@ -33,7 +33,7 @@ function Login() {
         try {
             const res = await axios.post(url, userData, { headers: headers });
             localStorage.setItem('JWT_Token', res.data.token);
-            localStorage.setItem('authId', res.data.userId);
+            localStorage.setItem('AuthId', res.data.userId);
             setLoginBtnText(<i className="fa fa-spinner fa-spin"></i>);
             toast.success(res.data['message']);
             setAccessToken(res.data.token);

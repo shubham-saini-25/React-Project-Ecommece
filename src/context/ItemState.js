@@ -7,7 +7,7 @@ const ItemState = (props) => {
     const [search, setSearch] = useState('');
     const [secret, setSecret] = useState('');
 
-    const authId = localStorage.getItem('authId');
+    const authId = localStorage.getItem('AuthId');
     const [authUserId, setAuthUserId] = useState(authId);
 
     let token = localStorage.getItem('JWT_Token');

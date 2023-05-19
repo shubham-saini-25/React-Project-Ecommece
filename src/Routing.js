@@ -12,8 +12,10 @@ import { BrowserRouter as Router } from "react-router-dom";
 import AddToCart from './components/products/AddToCart';
 import PaymentInvoice from './components/payment/PaymentInvoice';
 import AddProduct from './components/AdminPages/AddProduct';
+import AdminHomePage from './components/AdminPages/AdminHomePage';
 import ViewProducts from './components/AdminPages/ViewProducts';
 import UpdateProduct from './components/AdminPages/UpdateProduct';
+import ViewCustomers from './components/AdminPages/ViewCustomers';
 
 // const Routing = () => {
 //     <BrowserRouter>
@@ -36,6 +38,12 @@ const router = createBrowserRouter([
         path: "/",
         element: (
             <App />
+        ),
+    },
+    {
+        path: "/admin-homepage",
+        element: (
+            <AdminHomePage />
         ),
     },
     {
@@ -96,6 +104,12 @@ const router = createBrowserRouter([
         path: "/view-products",
         element: (
             <ViewProducts />
+        ),
+    },
+    {
+        path: "/view-users",
+        element: (
+            <ViewCustomers />
         ),
     },
     {
