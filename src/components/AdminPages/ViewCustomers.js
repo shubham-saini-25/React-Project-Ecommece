@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
-import { Container, Button, Modal } from 'react-bootstrap';
+import { Container, Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
