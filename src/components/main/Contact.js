@@ -16,10 +16,10 @@ function ContactForm() {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        setFormBtnStatus('Sending...')
+        e.preventDefault();
+        setFormBtnStatus('Sending...');
 
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/send-mail`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/send-mail`, {
             method: 'POST',
             body: JSON.stringify({ name, email, message }),
             headers: {

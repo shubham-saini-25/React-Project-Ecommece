@@ -39,7 +39,7 @@ const AddToCart = () => {
             setSecret(clientSecret);
         }
         fetchData();
-    }, [shippingCharges]);
+    }, []);
 
     const handleShow = () => {
         setShow(true);

@@ -1,20 +1,17 @@
 import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import { ToastContainer, toast } from 'react-toastify';
 import { useState } from "react";
-import Swal from 'sweetalert2';
 import { useCart } from "react-use-cart";
-import { useNavigate } from "react-router-dom";
 import { useStripe, useElements, PaymentElement, AddressElement } from '@stripe/react-stripe-js';
 
 const PaymentForm = (props) => {
-    const stripe = useStripe();
-    const elements = useElements();
-    const navigate = useNavigate();
     const { emptyCart, cartTotal } = useCart();
-
     const totalAmount = (cartTotal + props.shippingCharges).toFixed(2);
-
     const [payBtnText, setPayBtnText] = useState('Make Payment');
+    const [emailError, setEmailError] = useState('');
+    const [email, setEmail] = useState('');
+    const elements = useElements();
+    const stripe = useStripe();
 
     const addressOptions = {
         mode: 'shipping',
@@ -24,7 +21,7 @@ const PaymentForm = (props) => {
         },
         validation: {
             phone: {
-                required: 'never',
+                required: 'always',
             },
         },
     }
@@ -32,11 +29,19 @@ const PaymentForm = (props) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        const isValidEmail = /\S+@\S+\.\S+/.test(email);
+        if (isValidEmail && email.length > 0) {
+            setEmailError('');
+        } else {
+            setEmailError('Please enter a valid email');
+        }
+
         setPayBtnText(<i className="fa fa-spinner fa-spin"></i>);
         const result = await stripe.confirmPayment({
             elements,
             confirmParams: {
                 return_url: 'http://localhost:3000/payment-invoice',
+                receipt_email: email,
             },
         });
 
@@ -62,10 +67,20 @@ const PaymentForm = (props) => {
                         <Card.Body>
                             <Row>
                                 <Col md={6}>
+                                    <Form.Group className="mb-3" style={{ marginTop: '-3px' }}>
+                                        <Form.Label style={{ fontSize: '15px' }}>Email</Form.Label>
+                                        <Form.Control type="email" placeholder="Enter your email"
+                                            value={email} onChange={(e) => setEmail(e.target.value)}
+                                            style={{ marginTop: '-5px', height: '45px', border: emailError ? '2px solid red' : '1px solid #e6e6e6' }} />
+                                        {emailError && <div className="text-danger" style={{ fontSize: '15px' }}>
+                                            {emailError}
+                                        </div>}
+                                    </Form.Group>
+
                                     <AddressElement options={addressOptions} />
                                 </Col>
                                 <Col md={6}>
-                                    <PaymentElement />
+                                    <PaymentElement className="mt-1" />
                                     <hr />
                                     <div className='table-responsive text-center mt-3'>
                                         <table className="table table-bordered border-light">
