@@ -41,7 +41,7 @@ const router = createBrowserRouter([
         ),
     },
     {
-        path: "/admin-homepage",
+        path: "/admin/home",
         element: (
             <AdminHomePage />
         ),
@@ -89,25 +89,25 @@ const router = createBrowserRouter([
         ),
     },
     {
-        path: "/add-products",
+        path: "/admin/add-products",
         element: (
             <AddProduct />
         ),
     },
     {
-        path: "/update-products",
+        path: "/admin/update-products",
         element: (
             <UpdateProduct />
         ),
     },
     {
-        path: "/view-products",
+        path: "/admin/view-products",
         element: (
             <ViewProducts />
         ),
     },
     {
-        path: "/view-users",
+        path: "/admin/view-users",
         element: (
             <ViewCustomers />
         ),

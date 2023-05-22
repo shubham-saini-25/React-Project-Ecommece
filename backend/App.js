@@ -4,7 +4,7 @@ const express = require("express");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const cors = require("cors");
-const auth = require("./middleware/Auth");
+const { adminMiddleware, userMiddleware } = require("./middleware/Auth");
 const generateUniqueId = require('generate-unique-id');
 
 // module for uploading product image 
@@ -16,7 +16,10 @@ const timestamp = Date.now();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, 'uploads/') },
-    filename: (req, file, cb) => { cb(null, file.originalname.replace(file.originalname, timestamp + file.originalname)) },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname.replace(file.originalname,
+            file.mimetype.split('/')[0] + '_' + timestamp + '.' + file.mimetype.split('/')[1]))
+    },
 });
 const upload = multer({ storage });
 
@@ -27,15 +30,15 @@ app.use(express.static(path.resolve("./uploads")));
 
 const email = require('./Email');
 const payment = require('./Payment');
-app.use('/email', email);
-app.use('/payment', payment);
+app.use('/', email);
+app.use('/', payment);
 
 const User = require("./models/user");
 const Product = require("./models/product");
 
-app.post("/api/welcome", auth, (req, res) => {
-    res.status(200).send("Welcome 🙌 ");
-});
+// app.get("/admin/welcome", adminMiddleware, (req, res) => {
+//     res.status(200).send("Welcome 🙌 ");
+// });
 
 // API for get the total users count
 app.get("/api/get-user-count", async (req, res) => {
@@ -178,16 +181,26 @@ app.post("/api/update-password", async (req, res) => {
     }
 });
 
-// API for getting all customer details
-app.get('/api/get-users', async (req, res) => {
+// API for getting all customer details only for an Admin
+app.get('/api/get-users/:id', async (req, res) => {
     try {
-        const user = await User.find();
 
-        if (!user) {
-            res.status(404).send('User Not Found');
+        const userId = req.params.id;
+
+        const admin = await User.find({ _id: userId });
+
+        if (admin[0].purpose === "Sell") {
+
+            const user = await User.find();
+            if (!user) {
+                res.status(404).send('User Not Found');
+            }
+
+            res.status(200).json({ user });
+        } else {
+            res.status(401).send('Unauthorised User');
         }
 
-        res.status(200).json({ user });
     } catch (err) {
         console.log(err);
         res.status(500).send('Internal Server Error');
@@ -233,35 +246,45 @@ app.delete('/api/delete-user/:id', async (req, res) => {
 app.post("/api/add-products", upload.single('image'), async (req, res) => {
     try {
         const { name, category, description, price, createdBy } = req.body;
-        const id = generateUniqueId();
-        const image = req.file.originalname.replace(req.file.originalname, timestamp + req.file.originalname);
 
-        // Validate product information input
-        if (!(name && category && description && price && image)) {
-            res.status(400).send("All input is required");
-            return; // Return early to prevent further execution
+        const admin = await User.find({ _id: createdBy });
+
+        if (admin[0].purpose === "Sell") {
+            const id = generateUniqueId();
+            if (req.file === undefined) {
+                res.status(400).send("Image is required");
+            }
+            const image = req.file.mimetype.split('/')[0] + '_' + timestamp + '.' + req.file.mimetype.split('/')[1];
+
+            // Validate product information input
+            if (!(name && category && description && price && image)) {
+                res.status(400).send("All input is required");
+                return; // Return early to prevent further execution
+            }
+
+            // Check if the product with the same name already exists
+            const existingProduct = await Product.findOne({ name });
+
+            if (existingProduct) {
+                res.status(400).send("Product with the same name already exists");
+                return; // Return early to prevent further execution
+            }
+
+            // add new product in the database
+            const newProduct = await Product.create({
+                id, name, category, description, price, image, createdBy
+            });
+
+            const response = {
+                'status': 200,
+                'product': newProduct,
+                'message': 'New Product Added successfully!',
+            }
+
+            res.send(response);
+        } else {
+            res.status(401).send('Unauthorised User');
         }
-
-        // Check if the product with the same name already exists
-        const existingProduct = await Product.findOne({ name });
-
-        if (existingProduct) {
-            res.status(400).send("Product with the same name already exists");
-            return; // Return early to prevent further execution
-        }
-
-        // add new product in the database
-        const newProduct = await Product.create({
-            id, name, category, description, price, image, createdBy
-        });
-
-        const response = {
-            'status': 200,
-            'product': newProduct,
-            'message': 'New Product Added successfully!',
-        }
-
-        res.send(response);
     } catch (err) {
         console.log(err);
         res.status(500).send('Internal Server Error');
@@ -295,7 +318,7 @@ app.post("/api/update-product/:id", upload.single('image'), async (req, res) => 
             product.description = req.body.description;
         }
         if (req.file) {
-            product.image = req.file.originalname.replace(req.file.originalname, timestamp + req.file.originalname);;
+            product.image = req.file.mimetype.split('/')[0] + '_' + timestamp + '.' + req.file.mimetype.split('/')[1];
         }
 
         // Save the updated product
@@ -343,20 +366,27 @@ app.get('/api/get-products/:id', async (req, res) => {
     try {
         const userId = req.params.id;
 
-        const products = await Product.find({ createdBy: userId });
+        const admin = await User.find({ _id: userId });
 
-        if (!products) {
-            res.status(404).send('No Product Found');
+        if (admin[0].purpose === "Sell") {
+            const products = await Product.find({ createdBy: userId });
+
+            if (!products) {
+                res.status(404).send('No Product Found');
+            }
+
+            res.status(200).json({ 'products': products, });
         }
-
-        res.status(200).json({ 'products': products, });
+        else {
+            res.status(401).send('Unauthorised User');
+        }
     } catch (err) {
         console.log(err);
         res.status(500).send('Internal Server Error');
     }
 });
 
-// API for getting all products of a Admin
+// API for getting all products
 app.get('/api/get-products', async (req, res) => {
     try {
         const products = await Product.find();

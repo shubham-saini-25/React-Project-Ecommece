@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Container, Button } from 'react-bootstrap';
+import ItemContext from '../../context/ItemContext';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
 const ViewCustomers = () => {
     const [users, setUsers] = useState([]);
+    const { authUserId } = useContext(ItemContext);
 
     const handleSubmit = async (event) => {
         try {
-            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-users`);
-            setUsers(result.data.user);
-            toast.success(result.data.message);
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-users/${authUserId}`);
+            const result = data.user.filter(user => user.purpose === 'Buy');
+            setUsers(result);
+            toast.success(data.message);
         } catch (err) {
             toast.error(err.response.data)
         }
@@ -28,8 +31,8 @@ const ViewCustomers = () => {
                 icon: 'warning',
             }).then(async (result) => {
                 if (result.isConfirmed) {
-                    const result = await axios.delete(`${process.env.REACT_APP_API_URL}/api/delete-user/${userId}`);
-                    toast.success(result.data.message);
+                    const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/api/delete-user/${userId}`);
+                    toast.success(data.message);
                 }
             });
         } catch (err) {
@@ -39,7 +42,7 @@ const ViewCustomers = () => {
 
     useEffect(() => {
         handleSubmit();
-    }, []);
+    }, [authUserId]);
 
     return (
         <>

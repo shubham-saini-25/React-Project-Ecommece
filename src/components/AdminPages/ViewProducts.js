@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
 import { Container, Button, Modal } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
 import ItemContext from '../../context/ItemContext';
 import UpdateProduct from './UpdateProduct';
 import Swal from 'sweetalert2';
@@ -22,12 +22,14 @@ const ViewProducts = () => {
     };
 
     const handleSubmit = async (event) => {
-        try {
-            const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-products/${authUserId}`);
-            setProduct(result.data.products);
-            toast.success(result.data.message);
-        } catch (err) {
-            toast.error(err.response.data)
+        if (window.location.pathname === '/admin/view-products' && authUserId !== null) {
+            try {
+                const result = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-products/${authUserId}`);
+                setProduct(result.data.products);
+                toast.success(result.data.message);
+            } catch (err) {
+                toast.error(err.response.data)
+            }
         }
     };
 
@@ -53,7 +55,19 @@ const ViewProducts = () => {
 
     useEffect(() => {
         handleSubmit();
-    }, []);
+    }, [authUserId]);
+
+
+    if (product.length === 0) {
+        return (
+            <>
+                <ToastContainer />
+                <div className="d-flex justify-content-center" style={{ marginTop: "20rem" }}>
+                    <h1 className="display-3 fw-bold text-black mt-4">No Product Found</h1>
+                </div>
+            </>
+        );
+    }
 
     return (
         <>

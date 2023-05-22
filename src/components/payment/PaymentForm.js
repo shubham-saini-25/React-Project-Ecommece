@@ -5,7 +5,7 @@ import { useCart } from "react-use-cart";
 import { useStripe, useElements, PaymentElement, AddressElement } from '@stripe/react-stripe-js';
 
 const PaymentForm = (props) => {
-    const { emptyCart, cartTotal } = useCart();
+    const { cartTotal } = useCart();
     const totalAmount = (cartTotal + props.shippingCharges).toFixed(2);
     const [payBtnText, setPayBtnText] = useState('Make Payment');
     const [emailError, setEmailError] = useState('');
