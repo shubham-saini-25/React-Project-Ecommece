@@ -1,12 +1,7 @@
 const nodemailer = require("nodemailer");
 const express = require("express");
-const cors = require("cors");
+const router = express.Router();
 require('dotenv').config();
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-app.listen(5000, () => console.log("Server Running..."));
 
 const fs = require('fs');
 const ejs = require('ejs');
@@ -23,15 +18,13 @@ const contactEmail = nodemailer.createTransport({
     }
 });
 
-contactEmail.verify(function (error, success) {
+contactEmail.verify(function (error) {
     if (error) {
         console.log(error);
-    } else {
-        console.log("Server is ready to take our messages");
     }
 });
 
-app.post("/api/send-mail", (req, res) => {
+router.post("/api/send-mail", (req, res) => {
 
     const dynamicData = {
         name: req.body.name,
@@ -57,7 +50,7 @@ app.post("/api/send-mail", (req, res) => {
     });
 });
 
-app.post("/api/send-invoice", (req, res) => {
+router.post("/api/send-invoice", (req, res) => {
     try {
 
         const dynamicData = {
@@ -73,9 +66,9 @@ app.post("/api/send-invoice", (req, res) => {
             state: req.body.customerDetails.state,
             country: req.body.customerDetails.country,
             postal_code: req.body.customerDetails.postal_code,
-            cartTotal: parseFloat(req.body.cartTotal).toFixed(2),
-            shippingCharges: parseFloat(req.body.shippingCharges).toFixed(2),
-            totalAmount: parseFloat(req.body.cartTotal + req.body.shippingCharges).toFixed(2),
+            cartTotal: parseFloat(req.body.cartTotal),
+            shippingCharges: parseFloat(req.body.shippingCharges),
+            totalAmount: parseFloat(req.body.cartTotal + req.body.shippingCharges),
             items: req.body.items,
         };
 
@@ -101,3 +94,5 @@ app.post("/api/send-invoice", (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
+module.exports = router;

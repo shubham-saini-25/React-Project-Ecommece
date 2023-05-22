@@ -7,6 +7,7 @@ import axios from 'axios';
 const AddProduct = () => {
     const { authUserId } = useContext(ItemContext);
     const [name, setName] = useState('');
+    const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
     const [image, setImage] = useState(null);
@@ -23,6 +24,7 @@ const AddProduct = () => {
         formData.append('name', name);
         formData.append('price', price);
         formData.append('image', image);
+        formData.append('category', category);
         formData.append('description', description);
         formData.append('createdBy', authUserId);
 
@@ -35,7 +37,7 @@ const AddProduct = () => {
     };
 
     return (
-        <div className='Card d-flex justify-content-center align-items-center' style={{ marginTop: '10rem' }}>
+        <div className='Card d-flex justify-content-center align-items-center' style={{ marginTop: '5rem' }}>
             <ToastContainer />
             <Form onSubmit={handleSubmit}>
                 <div className="text-center mb-4">
@@ -54,6 +56,16 @@ const AddProduct = () => {
                 </Form.Group>
 
                 <Form.Group className="mb-3">
+                    <Form.Label>Product Category</Form.Label>
+                    <Form.Control className='fs-5' as="select" value={category} onChange={(e) => setCategory(e.target.value)}>
+                        <option value="">--Select a Category--</option>
+                        <option value="laptop">Laptops</option>
+                        <option value="tablet">Tablets</option>
+                        <option value="mobile">Mobiles</option>
+                    </Form.Control>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
                     <Form.Label>Product Price</Form.Label>
                     <Form.Control type="number" placeholder="Enter your product price" value={price}
                         onChange={(e) => setPrice(e.target.value)} size='lg' />
@@ -68,7 +80,7 @@ const AddProduct = () => {
                 <Button block="true" type="submit" disabled={!validateForm()} className='mt-3'>Add Product</Button>
 
             </Form>
-        </div>
+        </div >
     );
 }
 

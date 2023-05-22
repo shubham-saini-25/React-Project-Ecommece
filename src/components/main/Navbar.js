@@ -11,7 +11,7 @@ import axios from 'axios';
 function HomeNavbar() {
     const { accessToken, setAccessToken } = useContext(ItemContext);
     const { search, setSearch } = useContext(ItemContext);
-    const { authUserId, setAuthUserId } = useContext(ItemContext);
+    const { setAuthUserId } = useContext(ItemContext);
     const { totalUniqueItems } = useCart();
     const [navbarItems, setNavbarItems] = useState('');
 
@@ -34,17 +34,18 @@ function HomeNavbar() {
 
     const onChange = (e) => setSearch(e.target.value);
 
+    const userId = localStorage.getItem('AuthId');
     useEffect(() => {
         const getUser = async () => {
             try {
-                const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-user/${authUserId}`);
+                const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-user/${userId}`);
                 setNavbarItems(res.data.user[0].purpose);
             } catch (err) {
                 toast.error(err.response.message)
             }
         }
         getUser();
-    }, []);
+    }, [userId]);
 
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">

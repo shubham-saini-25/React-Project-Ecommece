@@ -5,20 +5,18 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const cors = require("cors");
 const auth = require("./middleware/Auth");
+const generateUniqueId = require('generate-unique-id');
 
 // module for uploading product image 
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-let randomImageNumber;
-setInterval(function () {
-    randomImageNumber = Math.floor(Math.random() * 9999999);
-}, 1500);
+const timestamp = Date.now();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, 'uploads/') },
-    filename: (req, file, cb) => { cb(null, file.originalname.replace(file.originalname, randomImageNumber + file.originalname)) },
+    filename: (req, file, cb) => { cb(null, file.originalname.replace(file.originalname, timestamp + file.originalname)) },
 });
 const upload = multer({ storage });
 
@@ -26,6 +24,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.resolve("./uploads")));
+
+const email = require('./Email');
+const payment = require('./Payment');
+app.use('/email', email);
+app.use('/payment', payment);
 
 const User = require("./models/user");
 const Product = require("./models/product");
@@ -229,14 +232,12 @@ app.delete('/api/delete-user/:id', async (req, res) => {
 // API for Add New Products
 app.post("/api/add-products", upload.single('image'), async (req, res) => {
     try {
-        const name = req.body.name;
-        const price = parseFloat(req.body.price);
-        const description = req.body.description;
-        const image = req.file.originalname.replace(req.file.originalname, randomImageNumber + req.file.originalname);
-        const createdBy = req.body.createdBy;
+        const { name, category, description, price, createdBy } = req.body;
+        const id = generateUniqueId();
+        const image = req.file.originalname.replace(req.file.originalname, timestamp + req.file.originalname);
 
         // Validate product information input
-        if (!(name && description && price && image)) {
+        if (!(name && category && description && price && image)) {
             res.status(400).send("All input is required");
             return; // Return early to prevent further execution
         }
@@ -251,7 +252,7 @@ app.post("/api/add-products", upload.single('image'), async (req, res) => {
 
         // add new product in the database
         const newProduct = await Product.create({
-            name, description, price, image, createdBy
+            id, name, category, description, price, image, createdBy
         });
 
         const response = {
@@ -287,11 +288,14 @@ app.post("/api/update-product/:id", upload.single('image'), async (req, res) => 
         if (req.body.price) {
             product.price = parseFloat(req.body.price);
         }
+        if (req.body.category) {
+            product.category = req.body.category;
+        }
         if (req.body.description) {
             product.description = req.body.description;
         }
         if (req.file) {
-            product.image = req.file.originalname.replace(req.file.originalname, randomImageNumber + req.file.originalname);;
+            product.image = req.file.originalname.replace(req.file.originalname, timestamp + req.file.originalname);;
         }
 
         // Save the updated product
@@ -334,7 +338,7 @@ app.delete('/api/delete-product/:id', async (req, res) => {
     }
 });
 
-// API for getting all products
+// API for getting all products of a Admin
 app.get('/api/get-products/:id', async (req, res) => {
     try {
         const userId = req.params.id;
@@ -342,21 +346,26 @@ app.get('/api/get-products/:id', async (req, res) => {
         const products = await Product.find({ createdBy: userId });
 
         if (!products) {
-            const response = {
-                'status': 404,
-                'message': 'No Product Found',
-            };
-
-            return res.send(response);
+            res.status(404).send('No Product Found');
         }
 
-        const response = {
-            'status': 200,
-            'products': products,
-            // 'message': 'Data retrieved successfully!',
+        res.status(200).json({ 'products': products, });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// API for getting all products of a Admin
+app.get('/api/get-products', async (req, res) => {
+    try {
+        const products = await Product.find();
+
+        if (!products) {
+            res.status(404).send('No Product Found');
         }
 
-        res.send(response);
+        res.status(200).json({ products, });
     } catch (err) {
         console.log(err);
         res.status(500).send('Internal Server Error');

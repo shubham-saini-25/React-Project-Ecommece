@@ -1,14 +1,10 @@
-require("dotenv").config();
 const express = require("express");
-const cors = require("cors");
-
-const app = express();
-app.use(express.json());
-app.use(cors());
+const router = express.Router();
+require("dotenv").config();
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-app.post('/api/process-payment', async (req, res) => {
+router.post('/api/process-payment', async (req, res) => {
     try {
         const { amount, currency } = req.body;
 
@@ -24,6 +20,4 @@ app.post('/api/process-payment', async (req, res) => {
     }
 });
 
-app.listen(5000, () => {
-    console.log('Server running on port 5000');
-});
+module.exports = router;

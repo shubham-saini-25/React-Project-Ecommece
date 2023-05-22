@@ -71,6 +71,7 @@ const ViewProducts = () => {
                                 <th>Image</th>
                                 <th>Name</th>
                                 <th>Description</th>
+                                <th>Category</th>
                                 <th>Price</th>
                                 <th>Actions</th>
                             </tr>
@@ -84,6 +85,7 @@ const ViewProducts = () => {
                                     </td>
                                     <td>{item.name}</td>
                                     <td>{item.description}</td>
+                                    <td>{item.category}</td>
                                     <td>{item.price}</td>
                                     <td>
                                         <div className='d-flex justify-content-center fa-2x'>

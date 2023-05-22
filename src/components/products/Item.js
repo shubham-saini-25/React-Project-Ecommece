@@ -2,29 +2,35 @@ import React, { useContext, useEffect, useState } from 'react';
 import Products from './Products';
 import { Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import { HomeProducts, Laptops, Tablets, Mobiles } from '../../constants/data';
+import { HomeProducts } from '../../constants/data';
 import ItemContext from '../../context/ItemContext';
+import axios from 'axios';
 
-const Item = (props) => {
+const Item = () => {
     const [Product, setProduct] = useState([]);
     const { search } = useContext(ItemContext);
     const { items } = useParams();
 
-    const allItems = [...Laptops, ...Tablets, ...Mobiles];
+    const showItems = async () => {
 
-    const showItems = () => {
+        const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-products`);
+        const dbProducts = data.products;
+
         if (search !== '') {
-            const filteredArray = allItems.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
-            setProduct(filteredArray)
+            const filteredArray = dbProducts.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
+            setProduct(filteredArray);
         } else {
             if (items === undefined) {
                 setProduct(HomeProducts);
             } else if (items === "laptops") {
-                setProduct(Laptops);
+                const laptops = dbProducts.filter(product => product.category === 'laptop');
+                setProduct(laptops);
             } else if (items === "tablets") {
-                setProduct(Tablets);
+                const tablets = dbProducts.filter(product => product.category === 'tablet');
+                setProduct(tablets);
             } else if (items === "mobiles") {
-                setProduct(Mobiles);
+                const mobiles = dbProducts.filter(product => product.category === 'mobile');
+                setProduct(mobiles);
             }
         }
     }

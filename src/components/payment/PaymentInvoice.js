@@ -24,7 +24,7 @@ const PaymentInvoice = () => {
     });
 
     useEffect(() => {
-        let randomInvoiceNumber = Math.floor(Math.random() * 99999999);
+        let randomInvoiceNumber = Date.now();
         setInvoiceNumber(randomInvoiceNumber);
 
         if (cartTotal < 500) {

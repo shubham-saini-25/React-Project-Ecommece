@@ -1,7 +1,5 @@
 const http = require("http");
 const app = require("./App");
-// const email = require("./Email");
-// const payment = require("./Payment");
 const server = http.createServer(app);
 
 const { API_PORT } = process.env;
