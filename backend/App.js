@@ -1,5 +1,5 @@
-require("dotenv").config();
 require("./config/database").connect();
+require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
@@ -15,6 +15,7 @@ const product = require('./Routes/Product');
 const order = require('./Routes/Order');
 const payment = require('./Routes/Payment');
 const email = require('./Routes/Email');
+
 app.use('/', user);
 app.use('/', product);
 app.use('/', order);
