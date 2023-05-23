@@ -5,9 +5,10 @@ require('dotenv').config();
 
 const fs = require('fs');
 const ejs = require('ejs');
+
 // Read the EJS template file
-const contactMailTemplate = fs.readFileSync('./Email-Templates/contactMail.ejs', 'utf-8');
-const invoiceMailTemplate = fs.readFileSync('./Email-Templates/orderInvoiceMail.ejs', 'utf-8');
+const contactMailTemplate = fs.readFileSync('../Emails/contactMail.ejs', 'utf-8');
+const invoiceMailTemplate = fs.readFileSync('../Emails/orderInvoiceMail.ejs', 'utf-8');
 
 const contactEmail = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
