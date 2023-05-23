@@ -16,6 +16,7 @@ import AdminHomePage from './components/AdminPages/AdminHomePage';
 import ViewProducts from './components/AdminPages/ViewProducts';
 import UpdateProduct from './components/AdminPages/UpdateProduct';
 import ViewCustomers from './components/AdminPages/ViewCustomers';
+import CustomerOrders from './components/products/CustomerOrders';
 
 // const Routing = () => {
 //     <BrowserRouter>
@@ -74,6 +75,12 @@ const router = createBrowserRouter([
         path: "/contactUs",
         element: (
             <ContactForm />
+        ),
+    },
+    {
+        path: "/my-orders",
+        element: (
+            <CustomerOrders />
         ),
     },
     {

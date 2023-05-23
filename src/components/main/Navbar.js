@@ -17,6 +17,8 @@ function HomeNavbar() {
 
     const removeToken = () => {
         localStorage.removeItem('JWT_Token');
+        localStorage.removeItem('cartItems');
+        localStorage.removeItem('cartTotal');
         localStorage.removeItem('AuthId');
         setAccessToken('');
         setAuthUserId('');
@@ -60,7 +62,7 @@ function HomeNavbar() {
                         <Nav.Link href="/">Home</Nav.Link>
                         <Nav.Link href="/about">About</Nav.Link>
                         <Nav.Link href="/contactUs">Contact Us</Nav.Link>
-                        <Nav.Link href="/">Products</Nav.Link>
+                        <Nav.Link href="/my-orders">My Orders</Nav.Link>
                     </Nav>
 
                     {accessToken === null ?

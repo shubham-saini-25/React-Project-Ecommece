@@ -5,7 +5,7 @@ import { useCart } from "react-use-cart";
 import { useStripe, useElements, PaymentElement, AddressElement } from '@stripe/react-stripe-js';
 
 const PaymentForm = (props) => {
-    const { cartTotal } = useCart();
+    const { items, cartTotal } = useCart();
     const totalAmount = (cartTotal + props.shippingCharges).toFixed(2);
     const [payBtnText, setPayBtnText] = useState('Make Payment');
     const [emailError, setEmailError] = useState('');
@@ -36,6 +36,8 @@ const PaymentForm = (props) => {
             setEmailError('Please enter a valid email');
         }
 
+        localStorage.setItem('cartItems', JSON.stringify(items));
+        localStorage.setItem('cartTotal', cartTotal);
         setPayBtnText(<i className="fa fa-spinner fa-spin"></i>);
         const result = await stripe.confirmPayment({
             elements,
@@ -87,7 +89,7 @@ const PaymentForm = (props) => {
                                             <thead>
                                                 <tr>
                                                     <td>Sub Total:</td>
-                                                    <td>${cartTotal}</td>
+                                                    <td>${cartTotal.toFixed(2)}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Shipping:</td>

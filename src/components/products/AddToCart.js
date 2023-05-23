@@ -18,7 +18,6 @@ const AddToCart = () => {
     const [show, setShow] = useState(false);
 
     useEffect(() => {
-
         if (cartTotal < 500) {
             setShippingCharges(99);
         } else {
@@ -86,12 +85,11 @@ const AddToCart = () => {
                                 <Card.Body className="p-4">
                                     <Row className="justify-content-between align-items-center">
                                         <Col md="2" lg="2" xl="2">
-                                            <Card.Img className="rounded-3" fluid="true"
-                                                src={item.image} alt={item.name} />
+                                            <Card.Img className="rounded-3" fluid="true" src={`${process.env.REACT_APP_API_URL}/${item.image}`} alt={item.name} />
                                         </Col>
 
                                         <Col md="3" lg="3" xl="3">
-                                            <p className="lead fw-normal mt-3">{item.name}</p>
+                                            <h5 className="mt-3">{item.name}</h5>
                                             <p className="fw-normal mt-3">Price: ${(item.price).toFixed(2)}</p>
                                         </Col>
 
@@ -108,7 +106,7 @@ const AddToCart = () => {
                                         </Col>
 
                                         <Col md="3" lg="2" xl="2" className="offset-lg-1">
-                                            <h5 className="mb-0">${item.quantity > 0 ? (item.quantity * item.price).toFixed(2) : (item.price).toFixed(2)}</h5>
+                                            <h5 className="mb-0">${item.itemTotal.toFixed(2)}</h5>
                                         </Col>
 
                                         <Col md="1" lg="1" xl="1" className="text-end">
