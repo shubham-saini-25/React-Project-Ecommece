@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import ConatcUsImg from '../../images/contactUs.png';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
 function ContactForm() {
     const [name, setName] = useState("");
@@ -19,22 +20,22 @@ function ContactForm() {
         e.preventDefault();
         setFormBtnStatus('Sending...');
 
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/send-mail`, {
-            method: 'POST',
-            body: JSON.stringify({ name, email, message }),
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
+        const url = `${process.env.REACT_APP_API_URL}/api/send-mail`;
+        const data = { name, email, message };
+        const headers = { 'Content-Type': 'application/json' };
 
-        const data = await response.json();
-
-        if (response) {
-            toast.success("Mail sent succesfully!");
-            setName("");
-            setEmail("");
-            setMessage("");
-            setFormBtnStatus('Send');
+        try {
+            const response = await axios.post(url, data, { headers: headers });
+            if (response) {
+                toast.success(response.data.message);
+                setName("");
+                setEmail("");
+                setMessage("");
+                setFormBtnStatus('Send');
+            }
+        } catch (err) {
+            console.log(err)
+            toast.error(err.message);
         }
     }
 

@@ -4,7 +4,7 @@ const MONGO_URL = process.env.DB_URL;
 
 exports.connect = () => {
     // Connecting to the database
-    Mongoose.connect(MONGO_URL, {
+    Mongoose.connect('mongodb://localhost:27017/', {
         useNewUrlParser: true, useUnifiedTopology: true
     }).then(() => {
         console.log("Successfully connected to database");

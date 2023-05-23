@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <!--Script Link  put befor end of </body> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #ffe8d2;
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid my-5  d-flex  justify-content-center">
+        <div class="card card-1">
+            <div class="card-header bg-white">
+                <h2 class="text-center mt-2 mb-2">Order Confirmation</h2>
+                <div class="row invoice mt-5">
+                    <div class="col" style="text-align: left;">
+                        <div class="col-auto">
+                            <p class="mb-1 text-dark"><b>Order Details</b></p>
+                        </div>
+                        <p class="mb-1">
+                            Invoice Number: <%= invoiceNumber %>
+                        </p>
+                        <p class="mb-1">
+                            Invoice Date: <%= date %>
+                        </p>
+                        <p class="mb-1">
+                            Invoice Time: <%= time %>
+                        </p>
+                    </div>
+                    <div class="col" style="text-align: right;">
+                        <div class="col-auto">
+                            <p class="mb-1 text-dark"><b>Shipping Details</b></p>
+                        </div>
+                        <p class="mb-1">
+                            <%= line1 %>, <%= line2 %>, <%= city %>,
+                        </p>
+                        <p class="mb-1">
+                            <%= state %>, <%= country %>, <%= postal_code %>
+                        </p>
+                    </div>
+                </div>
+                <div class="media flex-sm-row flex-column-reverse justify-content-between  ">
+                    <div class="col my-auto mt-4">
+                        <h5 class="mb-3 text-center ">Thanks for your Order,
+                            <b class="text-primary">
+                                <%= name %>
+                            </b> !
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <div class="card card-2">
+                            <div class="card-body">
+                                <div class="row flex-column flex-md-row text-center">
+                                    <div class="col">
+                                        <h6 class="fw-bold">Item</h6>
+                                    </div>
+                                    <div class="col">
+                                        <h6 class="fw-bold">Quantity</h6>
+                                    </div>
+                                    <div class="col">
+                                        <h6 class="fw-bold">Price</h6>
+                                    </div>
+                                    <div class="col">
+                                        <h6 class="fw-bold">Total</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% for (let i=0; i < items.length; i++) { %>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="card card-2">
+                                <div class="card-body">
+                                    <div class="row flex-column flex-md-row text-center">
+                                        <div class="col">
+                                            <h6>
+                                                <%= items[i].name %>
+                                            </h6>
+                                        </div>
+                                        <div class="col">
+                                            <h6>
+                                                <%= items[i].quantity %>
+                                            </h6>
+                                        </div>
+                                        <div class="col ">
+                                            <h6>
+                                                $<%= items[i].price %>
+                                            </h6>
+                                        </div>
+                                        <div class="col ">
+                                            <h6>
+                                                $<%= items[i].quantity * items[i].price %>
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+                        <hr>
+                        <div class="row mt-4">
+                            <div class="col">
+                                <div class="row justify-content-start">
+                                    <div class="col-auto my-auto ">
+                                        <p class="mb-0">
+                                            <b>Customer Details</b>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row justify-content-start">
+                                    <div class="col-auto mt-1 my-auto ">
+                                        <p class="mb-0">
+                                            Email: <%= email %>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row justify-content-start">
+                                    <div class="col-auto ml-auto">
+                                        <p class="mb-0">
+                                            Contact: $<%= phone %>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <br>
+                                <div class="row justify-content-end">
+                                    <div class="col-auto my-auto ">
+                                        <p class="mb-0">
+                                            <b>Sub Total:</b> $<%= cartTotal %>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row justify-content-end">
+                                    <div class="col-auto ml-auto">
+                                        <p class="mb-0">
+                                            <b>Delivery Charges:</b> $<%= shippingCharges %>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            </div>
+            <div class="card-footer">
+                <div class="jumbotron-fluid">
+                    <div class="row justify-content-center ">
+                        <div class="col-auto my-auto ">
+                            <h3 class="mb-0 font-weight-bold">TOTAL PAID AMOUNT: </h3>
+                        </div>
+                        <div class="col-auto mt-2 ml-auto">
+                            <h1 class="fs-3">
+                                <b class="text-primary">$<%= totalAmount %></b>
+                            </h1>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row mb-2 d-flex justify-content-center">
+                        <div class="col-auto border-line">
+                            <a href="#">
+                                <i class="fa fa-facebook-square fa-2x"></i>
+                            </a>
+                        </div>
+                        <div class="col-auto border-line">
+                            <a href="#">
+                                <i class="fa fa-instagram fa-2x" style="color: orchid;"></i>
+                            </a>
+                        </div>
+                        <div class="col-auto border-line">
+                            <a href="#">
+                                <i class="fa fa-whatsapp fa-2x text-success"></i>
+                            </a>
+                        </div>
+                        <div class="col-auto border-line">
+                            <a href="#">
+                                <i class="fa fa-twitter fa-2x text-info"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

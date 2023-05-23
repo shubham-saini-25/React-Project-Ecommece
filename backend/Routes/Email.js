@@ -7,8 +7,8 @@ const fs = require('fs');
 const ejs = require('ejs');
 
 // Read the EJS template file
-const contactMailTemplate = fs.readFileSync('../Emails/contactMail.ejs', 'utf-8');
-const invoiceMailTemplate = fs.readFileSync('../Emails/orderInvoiceMail.ejs', 'utf-8');
+const contactMailTemplate = fs.readFileSync('./Emails/contactMail.ejs', 'utf-8');
+const invoiceMailTemplate = fs.readFileSync('./Emails/orderInvoiceMail.ejs', 'utf-8');
 
 const contactEmail = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
@@ -26,34 +26,37 @@ contactEmail.verify(function (error) {
 });
 
 router.post("/api/send-mail", (req, res) => {
+    try {
+        const dynamicData = {
+            name: req.body.name,
+            email: req.body.email,
+            message: req.body.message
+        };
 
-    const dynamicData = {
-        name: req.body.name,
-        email: req.body.email,
-        message: req.body.message
-    };
+        const emailTemplate = ejs.render(contactMailTemplate, dynamicData);
 
-    const emailTemplate = ejs.render(contactMailTemplate, dynamicData);
+        const mail = {
+            from: process.env.MAIL_FROM_ADDRESS,
+            to: "shubham@gmail.com",
+            subject: 'contact us query mail',
+            html: emailTemplate,
+        };
 
-    const mail = {
-        from: process.env.MAIL_FROM_ADDRESS,
-        to: "shubham@gmail.com",
-        subject: 'contact us query mail',
-        html: emailTemplate,
-    };
-
-    contactEmail.sendMail(mail, (error) => {
-        if (error) {
-            res.json({ status: "ERROR" });
-        } else {
-            res.json({ status: "Message Sent" });
-        }
-    });
+        contactEmail.sendMail(mail, (error) => {
+            if (error) {
+                res.status(500).json({ message: error.message });
+            } else {
+                res.status(200).json({ message: 'Mail sent succesfully!' });
+            }
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 router.post("/api/send-invoice", (req, res) => {
     try {
-
         const dynamicData = {
             invoiceNumber: req.body.invoiceNumber,
             date: req.body.dateTime.split("at")[0],
