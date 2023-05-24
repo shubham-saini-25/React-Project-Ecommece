@@ -40,9 +40,7 @@ const ViewCustomers = () => {
         }
     }
 
-    useEffect(() => {
-        handleSubmit();
-    }, [authUserId]);
+    handleSubmit();
 
     return (
         <>

@@ -4,17 +4,20 @@ const generateUniqueId = require('generate-unique-id');
 
 // module for uploading product image 
 const multer = require('multer');
-const fs = require('fs');
 const timestamp = Date.now();
+const path = require('path');
+const fs = require('fs');
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => { cb(null, '../uploads/') },
+    destination: (req, file, cb) => { cb(null, path.join(__dirname, '../uploads/')) },
     filename: (req, file, cb) => {
         cb(null, file.originalname.replace(file.originalname,
             file.mimetype.split('/')[0] + '_' + timestamp + '.' + file.mimetype.split('/')[1]))
     },
 });
+
 const upload = multer({ storage });
+const User = require("../models/user");
 const Product = require("../models/product");
 
 // API for get the total products count
@@ -134,7 +137,7 @@ router.delete('/api/delete-product/:id', async (req, res) => {
         }
 
         // Delete the associated image file
-        fs.unlink(`uploads/${deleteProduct.image}`, (err) => {
+        fs.unlink(`../uploads/${deleteProduct.image}`, (err) => {
             if (err) {
                 console.error(err);
             }

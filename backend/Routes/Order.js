@@ -10,22 +10,24 @@ router.post("/api/save-order", async (req, res) => {
         const { order, buyerId, paymentIntentId } = req.body;
 
         const orderDate = new Date().toUTCString().slice(5, 16);
+        const _id = require('mongodb').ObjectId;
+        const checkPayment = await Order.find({ paymentIntentId });
 
-        // Create an array to store the new orders
         const newOrders = [];
 
-        // Iterate over each order object in the 'order' array
-        for (const singleOrder of order) {
-            const newOrder = await Order.create({
-                ...singleOrder,
-                buyerId,
-                paymentIntentId,
-                orderDate
-            });
-
-            newOrders.push(newOrder);
+        if (checkPayment.length === 0) {
+            // Iterate over each order object in the 'order' array
+            for (const singleOrder of order) {
+                const newOrder = await Order.create({
+                    ...singleOrder,
+                    _id: new _id(),
+                    paymentIntentId,
+                    orderDate,
+                    buyerId,
+                });
+                newOrders.push(newOrder);
+            }
         }
-
         res.status(200).json({ orders: newOrders });
     } catch (err) {
         console.log(err);

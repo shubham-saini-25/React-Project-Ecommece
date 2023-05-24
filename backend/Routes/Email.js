@@ -73,7 +73,7 @@ router.post("/api/send-invoice", (req, res) => {
             cartTotal: parseFloat(req.body.cartTotal),
             shippingCharges: parseFloat(req.body.shippingCharges),
             totalAmount: parseFloat(req.body.cartTotal + req.body.shippingCharges),
-            items: req.body.items,
+            items: JSON.parse(req.body.items),
         };
 
         const emailTemplate = ejs.render(invoiceMailTemplate, dynamicData);

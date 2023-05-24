@@ -107,7 +107,7 @@ function HomeNavbar() {
 
                     <ToastContainer />
                     <Nav className="me-auto">
-                        <Nav.Link href="/admin/admin-homepage">Home</Nav.Link>
+                        <Nav.Link href="/admin/home">Home</Nav.Link>
                         <Nav.Link href="/admin/add-products">Add Product</Nav.Link>
                         <Nav.Link href="/admin/view-products">View Product</Nav.Link>
                         <Nav.Link href="/view-users">View Customers</Nav.Link>

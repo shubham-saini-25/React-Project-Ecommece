@@ -9,6 +9,7 @@ const ItemState = (props) => {
 
     const authId = localStorage.getItem('AuthId');
     const [authUserId, setAuthUserId] = useState(authId);
+    const [shippingCharges, setShippingCharges] = useState(0);
 
     let token = localStorage.getItem('JWT_Token');
     const [accessToken, setAccessToken] = useState(token);
@@ -20,7 +21,8 @@ const ItemState = (props) => {
                 authUserId, setAuthUserId,
                 cartItems, setCartItems,
                 search, setSearch,
-                secret, setSecret
+                secret, setSecret,
+                shippingCharges, setShippingCharges,
             }
         }>
             {props.children}

@@ -1,12 +1,14 @@
 import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import { ToastContainer, toast } from 'react-toastify';
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useCart } from "react-use-cart";
+import ItemContext from "../../context/ItemContext";
 import { useStripe, useElements, PaymentElement, AddressElement } from '@stripe/react-stripe-js';
 
-const PaymentForm = (props) => {
+const PaymentForm = () => {
     const { items, cartTotal } = useCart();
-    const totalAmount = (cartTotal + props.shippingCharges).toFixed(2);
+    const { shippingCharges } = useContext(ItemContext);
+    const totalAmount = (cartTotal + shippingCharges).toFixed(2);
     const [payBtnText, setPayBtnText] = useState('Make Payment');
     const [emailError, setEmailError] = useState('');
     const [email, setEmail] = useState('');
@@ -93,7 +95,7 @@ const PaymentForm = (props) => {
                                                 </tr>
                                                 <tr>
                                                     <td>Shipping:</td>
-                                                    <td>{props.shippingCharges > 0 ? `$${props.shippingCharges.toFixed(2)}` : 'Free'}</td>
+                                                    <td>{shippingCharges > 0 ? `$${shippingCharges.toFixed(2)}` : 'Free'}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>Total:</th>

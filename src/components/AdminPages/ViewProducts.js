@@ -53,10 +53,7 @@ const ViewProducts = () => {
         }
     }
 
-    useEffect(() => {
-        handleSubmit();
-    }, [authUserId]);
-
+    handleSubmit();
 
     if (product.length === 0) {
         return (
@@ -95,7 +92,7 @@ const ViewProducts = () => {
                                 <tr key={idx}>
                                     <td>{idx + 1}</td>
                                     <td>
-                                        <img src={`${process.env.REACT_APP_API_URL}/${item.image}`} alt="product_img" width={50} />
+                                        <img src={`${process.env.REACT_APP_API_URL}/${item.image}`} alt="product_img" width={100} />
                                     </td>
                                     <td>{item.name}</td>
                                     <td>{item.description}</td>

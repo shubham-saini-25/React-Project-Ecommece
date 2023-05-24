@@ -13,8 +13,8 @@ const PaymentInvoice = () => {
     const [invoiceNumber, setInvoiceNumber] = useState('');
     const { emptyCart } = useCart();
     const { authUserId } = useContext(ItemContext);
+    const { shippingCharges } = useContext(ItemContext);
     const [customerInfo, setCustomerInfo] = useState({});
-    const [shippingCharges, setShippingCharges] = useState(0);
     const [cartItems, setCartItems] = useState([]);
     const [cartTotal, setCartTotal] = useState(0);
     const [sendEmailBtnText, setSendEmailBtnText] = useState('Send');
@@ -40,12 +40,6 @@ const PaymentInvoice = () => {
         const itemsTotal = localStorage.getItem('cartTotal');
         setCartItems(JSON.parse(items));
         setCartTotal(parseInt(itemsTotal));
-
-        if (cartTotal < 100) {
-            setShippingCharges(99);
-        } else {
-            setShippingCharges(0);
-        }
 
         const saveOrderDetails = async () => {
             const orderDetails = {
@@ -179,10 +173,11 @@ const PaymentInvoice = () => {
                                             <p className="mb-1 text-dark"><b>Shipping Details</b></p>
                                         </div>
                                         <p className="mb-1">
-                                            {customerInfo.customerDetails?.line1}, {customerInfo.customerDetails?.line2},{customerInfo.customerDetails?.city}
+                                            {customerInfo.customerDetails?.line1}, {customerInfo.customerDetails?.line2}
                                         </p>
                                         <p className="mb-1">
-                                            {customerInfo.customerDetails?.state}, {customerInfo.customerDetails?.country}, {customerInfo.customerDetails?.postal_code}
+                                            {customerInfo.customerDetails?.city}, {customerInfo.customerDetails?.state},
+                                            {customerInfo.customerDetails?.country}, {customerInfo.customerDetails?.postal_code}
                                         </p>
                                     </div>
                                 </div>
@@ -232,7 +227,7 @@ const PaymentInvoice = () => {
                                                             <h6>{item.quantity}</h6>
                                                         </div>
                                                         <div className="col">
-                                                            <h6>${item.price}</h6>
+                                                            <h6>${item.price.toFixed(2)}</h6>
                                                         </div>
                                                         <div className="col">
                                                             <h6>${item.itemTotal.toFixed(2)}</h6>
@@ -271,7 +266,7 @@ const PaymentInvoice = () => {
                                         </div>
                                         <div className="row justify-content-end">
                                             <div className="col-auto ml-auto">
-                                                <p className="mb-0"><b>Delivery Charges:</b> ${shippingCharges.toFixed(2)}</p>
+                                                <p className="mb-0"><b>Delivery Charges:</b> {shippingCharges > 0 ? `$${shippingCharges.toFixed(2)}` : 'Free'}</p>
                                             </div>
                                         </div>
                                     </div>

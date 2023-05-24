@@ -13,21 +13,24 @@ const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 const AddToCart = () => {
     const { isEmpty, totalUniqueItems, items, updateItemQuantity, removeItem, cartTotal, emptyCart } = useCart();
-    const { secret, setSecret } = useContext(ItemContext);
-    const [shippingCharges, setShippingCharges] = useState(0);
+    const { secret, setSecret, shippingCharges, setShippingCharges } = useContext(ItemContext);
     const [show, setShow] = useState(false);
 
     useEffect(() => {
+        let deleveryCharge = 0;
+
         if (cartTotal < 500) {
-            setShippingCharges(99);
+            deleveryCharge = 99;
+            setShippingCharges(deleveryCharge);
         } else {
-            setShippingCharges(0);
+            deleveryCharge = 0;
+            setShippingCharges(deleveryCharge);
         }
 
         async function fetchData() {
             const url = `${process.env.REACT_APP_API_URL}/api/process-payment`;
             const data = {
-                amount: parseInt(cartTotal + shippingCharges) * 100,
+                amount: parseInt(cartTotal + deleveryCharge) * 100,
                 currency: 'usd',
             }
             const headers = {
@@ -38,7 +41,7 @@ const AddToCart = () => {
             setSecret(clientSecret);
         }
         fetchData();
-    }, []);
+    }, [cartTotal]);
 
     const handleShow = () => {
         setShow(true);
