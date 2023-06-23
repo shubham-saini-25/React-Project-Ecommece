@@ -31,7 +31,7 @@ const PaymentInvoice = () => {
     let time = dateTime.split("at")[1];
 
     useEffect(() => {
-        // Swal.fire('Payment done successfully!', 'Thank you for your purchase!', 'success');
+        Swal.fire('Payment done successfully!', 'Thank you for your purchase!', 'success');
 
         let randomInvoiceNumber = Date.now();
         setInvoiceNumber(randomInvoiceNumber);

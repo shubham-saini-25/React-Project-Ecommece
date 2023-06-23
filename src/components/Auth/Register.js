@@ -5,11 +5,10 @@ import RegisterUserImg from '../../images/register.png'
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
 import { FaUser, FaUserCircle, FaKey, FaMobileAlt } from 'react-icons/fa';
+import axios from 'axios';
 
 function Register() {
-    const [purpose, setPurpose] = useState("Buy");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -19,14 +18,10 @@ function Register() {
         return name.length > 0 && email.length > 0 && phoneNumber.length > 0 && password.length > 0;
     }
 
-    const onOptionSelect = e => {
-        setPurpose(e.target.value)
-    }
-
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const userData = { name, email, purpose, phoneNumber, password };
+        const userData = { name, email, phoneNumber, password };
 
         try {
             const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/register`, userData);
@@ -35,7 +30,6 @@ function Register() {
             setEmail('');
             setPhoneNumber('');
             setPassword('');
-            setPurpose('Buy')
         } catch (err) {
             toast.error(err.response.data)
         }
@@ -51,14 +45,6 @@ function Register() {
                 <div className="text-center mt-4 name">User Register</div>
 
                 <Form className="p-3 mt-1" onSubmit={handleSubmit}>
-
-                    <Form.Group className="d-flex justify-content-center align-items-center mb-4">
-                        <input type="radio" name="purpose" value='Sell' onChange={onOptionSelect} checked={purpose === "Sell"} />
-                        &nbsp; want to Sell
-                        &emsp;&emsp;
-                        <input type="radio" name="purpose" value='Buy' onChange={onOptionSelect} checked={purpose === "Buy"} />
-                        &nbsp; want to Buy
-                    </Form.Group>
 
                     <Form.Group className="form-field d-flex align-items-center">
                         <FaUser />

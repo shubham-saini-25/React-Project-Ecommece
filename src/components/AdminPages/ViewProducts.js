@@ -33,6 +33,8 @@ const ViewProducts = () => {
         }
     };
 
+    handleSubmit();
+
     const deleteProduct = (itemId) => {
         try {
             Swal.fire({
@@ -52,8 +54,6 @@ const ViewProducts = () => {
             toast.error(err.response.data)
         }
     }
-
-    handleSubmit();
 
     if (product.length === 0) {
         return (

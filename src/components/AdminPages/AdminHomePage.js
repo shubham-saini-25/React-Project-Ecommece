@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const AdminHomePage = () => {
     const [totalUserCount, setTotalUserCount] = useState(0);
@@ -27,16 +28,16 @@ const AdminHomePage = () => {
             <div className="row">
                 <main role="main" className="">
                     <div className="pt-3 pb-2 mb-3 border-bottom">
-                        <h1 className="h1 text-center">Admin Panel</h1>
+                        <h1 className="h1 text-center">Admin Dashboard</h1>
                     </div>
                     <div className="row d-flex justify-content-center text-center">
                         <div className="col-md-4">
                             <div className="card mb-4">
                                 <div className="card-header h3">Total Users</div>
                                 <div className="card-body">
-                                    <p className="card-title fs-3">Number of Total Users = <b>{totalUserCount}</b></p>
-                                    <p className="card-text">The total number of Users will display here.</p>
-                                    <a href="#" className="btn btn-primary">View Details</a>
+                                    <p className="card-title fs-4">Number of Total Users = <b>{totalUserCount}</b></p>
+                                    <p className="card-text">The total number of Customers will display here.</p>
+                                    <Link to={'/admin/view-users'} className="btn btn-primary fw-bold">View Users</Link>
                                 </div>
                             </div>
                         </div>
@@ -44,9 +45,9 @@ const AdminHomePage = () => {
                             <div className="card mb-4">
                                 <div className="card-header h3">Total Products</div>
                                 <div className="card-body">
-                                    <p className="card-title fs-3">Number of Total Products = <b>{totalProductCount}</b></p>
+                                    <p className="card-title fs-4">Number of Total Products = <b>{totalProductCount}</b></p>
                                     <p className="card-text">The total number of Products will display here.</p>
-                                    <a href="#" className="btn btn-primary">View Details</a>
+                                    <Link to={'/admin/view-products'} className="btn btn-primary fw-bold">View Products</Link>
                                 </div>
                             </div>
                         </div>

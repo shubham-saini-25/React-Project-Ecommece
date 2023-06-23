@@ -12,13 +12,14 @@ const ViewCustomers = () => {
     const handleSubmit = async (event) => {
         try {
             const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-users/${authUserId}`);
-            const result = data.user.filter(user => user.purpose === 'Buy');
+            const result = data.user.filter(user => user.roll === 'Customer');
             setUsers(result);
             toast.success(data.message);
         } catch (err) {
             toast.error(err.response.data)
         }
     };
+    handleSubmit();
 
     const deleteUser = (userId) => {
         try {
@@ -40,8 +41,6 @@ const ViewCustomers = () => {
         }
     }
 
-    handleSubmit();
-
     return (
         <>
             <Container className="admin mt-5 h-100 bg-light rounded-4">
@@ -58,7 +57,7 @@ const ViewCustomers = () => {
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Contact</th>
-                                <th>Purpose for Login</th>
+                                <th>Roll</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -69,7 +68,7 @@ const ViewCustomers = () => {
                                     <td>{user.name}</td>
                                     <td>{user.email}</td>
                                     <td>{user.phoneNumber}</td>
-                                    <td>{user.purpose}</td>
+                                    <td>{user.roll}</td>
                                     <td>
                                         <div className='d-flex justify-content-center fa-2x'>
                                             <Button className='fa fa-trash text-danger bg-transparent border-0' onClick={() => deleteUser(user._id)}></Button>

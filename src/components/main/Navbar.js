@@ -13,7 +13,7 @@ function HomeNavbar() {
     const { search, setSearch } = useContext(ItemContext);
     const { setAuthUserId } = useContext(ItemContext);
     const { totalUniqueItems } = useCart();
-    const [navbarItems, setNavbarItems] = useState('');
+    const [userRoll, setUserRoll] = useState('');
 
     const removeToken = () => {
         localStorage.removeItem('JWT_Token');
@@ -41,7 +41,7 @@ function HomeNavbar() {
         const getUser = async () => {
             try {
                 const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-user/${userId}`);
-                setNavbarItems(res.data.user[0].purpose);
+                setUserRoll(res.data.user[0].roll);
             } catch (err) {
                 toast.error(err.response.message)
             }
@@ -51,10 +51,10 @@ function HomeNavbar() {
 
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-            <Navbar.Brand style={{ marginLeft: '20px' }} href="/">E-Commerce</Navbar.Brand>
+            <Navbar.Brand style={{ marginLeft: '20px' }}>E-Commerce</Navbar.Brand>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" style={{ marginRight: '20px' }} />
 
-            {(navbarItems !== "Sell" || navbarItems === undefined || navbarItems === null) ?
+            {(userRoll !== "Admin" || userRoll === undefined || userRoll === null) ?
                 <Navbar.Collapse id="responsive-navbar-nav" style={{ marginLeft: '20px' }}>
 
                     <ToastContainer />

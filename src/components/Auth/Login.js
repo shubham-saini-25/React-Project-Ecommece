@@ -34,13 +34,14 @@ function Login() {
             const res = await axios.post(url, userData, { headers: headers });
             localStorage.setItem('JWT_Token', res.data.token);
             localStorage.setItem('AuthId', res.data.userId);
+            console.log(res.data);
             setLoginBtnText(<i className="fa fa-spinner fa-spin"></i>);
             toast.success(res.data['message']);
             setAccessToken(res.data.token);
             setAuthUserId(res.data.userId);
             setEmail('');
             setPassword('');
-            setTimeout(() => { navigate('/') }, 2000);
+            setTimeout(() => { res.data.userId === "Customer" ? navigate('/') : navigate('/admin/home') }, 2000);
         } catch (err) {
             setLoginBtnText('Login')
             toast.error(err.response.data)

@@ -42,7 +42,7 @@ router.get('/api/get-orders/:buyerId', async (req, res) => {
     try {
         const auth = await User.find({ _id: buyerId });
 
-        if (auth[0].purpose === "Buy") {
+        if (auth[0].roll === "Customer") {
             // Fetch orders from the database based on the user ID
             const orders = await Order.find({ buyerId });
 

@@ -38,7 +38,7 @@ router.post("/api/add-products", upload.single('image'), async (req, res) => {
 
         const admin = await User.find({ _id: createdBy });
 
-        if (admin[0].purpose === "Sell") {
+        if (admin[0].roll === "Admin") {
             const id = generateUniqueId();
             if (req.file === undefined) {
                 res.status(400).send("Image is required");
@@ -157,8 +157,8 @@ router.get('/api/get-products/:id', async (req, res) => {
 
         const admin = await User.find({ _id: userId });
 
-        if (admin[0].purpose === "Sell") {
-            const products = await Product.find({ createdBy: userId });
+        if (admin[0].roll === "Admin") {
+            const products = await Product.find();
 
             if (!products) {
                 res.status(404).send('No Product Found');

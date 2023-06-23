@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt');
 // API for get the total users count
 router.get("/api/get-user-count", async (req, res) => {
     try {
-        const totalUserCount = await User.countDocuments();
+        const totalUserCount = await User.countDocuments({ roll: 'Customer' });
         res.status(200).json({ totalUserCount });
     } catch (err) {
         console.log(err);
@@ -18,7 +18,7 @@ router.get("/api/get-user-count", async (req, res) => {
 // API for User Registration
 router.post("/api/register", async (req, res) => {
     try {
-        const { name, email, purpose, phoneNumber, password } = req.body;
+        const { name, email, phoneNumber, password } = req.body;
 
         // Validate user input
         if (!(name && email && phoneNumber && password)) {
@@ -36,7 +36,7 @@ router.post("/api/register", async (req, res) => {
 
         // Create user in our database
         const user = await User.create({
-            name, email: email.toLowerCase(), purpose, phoneNumber, password: encryptedPassword,
+            name, email: email.toLowerCase(), roll: 'Customer', phoneNumber, password: encryptedPassword,
         });
 
         // Create JWT token
@@ -45,7 +45,7 @@ router.post("/api/register", async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                purpose: user.purpose,
+                roll: user.roll,
                 phoneNumber: user.phoneNumber,
                 password: user.password,
 
@@ -70,7 +70,7 @@ router.post("/api/login", async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Validate user input
+        // Validate user irollnput
         if (!(email && password)) {
             res.status(400).send("All input is required");
         }
@@ -87,6 +87,7 @@ router.post("/api/login", async (req, res) => {
                 'status': 200,
                 'token': token,
                 'userId': user._id,
+                'roll': user.roll,
                 'message': 'User Logged In Succesfully!',
             }
 
@@ -142,7 +143,7 @@ router.get('/api/get-users/:id', async (req, res) => {
 
         const admin = await User.find({ _id: userId });
 
-        if (admin[0].purpose === "Sell") {
+        if (admin[0].roll === "Admin") {
 
             const user = await User.find();
             if (!user) {

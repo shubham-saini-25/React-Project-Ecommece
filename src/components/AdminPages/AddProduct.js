@@ -31,6 +31,12 @@ const AddProduct = () => {
         try {
             const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/add-products`, formData);
             toast.success(res.data.message);
+            setName('');
+            setCategory('');
+            setDescription('');
+            setPrice('');
+            setImage(null);
+            event.target.reset();
         } catch (err) {
             toast.error(err.response.data)
         }
@@ -73,8 +79,7 @@ const AddProduct = () => {
 
                 <Form.Group className="mb-3">
                     <Form.Label>Product Image</Form.Label>
-                    <Form.Control type="file" placeholder="Enter your email address" accept="image/*"
-                        onChange={(e) => setImage(e.target.files[0])} size='lg' />
+                    <Form.Control type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} size='lg' />
                 </Form.Group>
 
                 <Button block="true" type="submit" disabled={!validateForm()} className='mt-3'>Add Product</Button>
