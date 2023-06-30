@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt');
 // API for get the total users count
 router.get("/api/get-user-count", async (req, res) => {
     try {
-        const totalUserCount = await User.countDocuments({ roll: 'Customer' });
+        const totalUserCount = await User.countDocuments({ role: 'Customer' });
         res.status(200).json({ totalUserCount });
     } catch (err) {
         console.log(err);
@@ -23,6 +23,7 @@ router.post("/api/register", async (req, res) => {
         // Validate user input
         if (!(name && email && phoneNumber && password)) {
             res.status(400).send("All input is required");
+            return;
         }
 
         // check if user already exist
@@ -36,7 +37,7 @@ router.post("/api/register", async (req, res) => {
 
         // Create user in our database
         const user = await User.create({
-            name, email: email.toLowerCase(), roll: 'Customer', phoneNumber, password: encryptedPassword,
+            name, email: email.toLowerCase(), role: 'Customer', phoneNumber, password: encryptedPassword,
         });
 
         // Create JWT token
@@ -45,7 +46,7 @@ router.post("/api/register", async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                roll: user.roll,
+                role: user.role,
                 phoneNumber: user.phoneNumber,
                 password: user.password,
 
@@ -70,9 +71,10 @@ router.post("/api/login", async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Validate user irollnput
+        // Validate user irolenput
         if (!(email && password)) {
             res.status(400).send("All input is required");
+            return;
         }
         // Validate if user exist in our database
         const user = await User.findOne({ email });
@@ -87,11 +89,12 @@ router.post("/api/login", async (req, res) => {
                 'status': 200,
                 'token': token,
                 'userId': user._id,
-                'roll': user.roll,
+                'role': user.role,
                 'message': 'User Logged In Succesfully!',
             }
 
             res.send(response);
+            return;
         }
         res.status(400).send("Invalid Credentials");
     } catch (err) {
@@ -135,15 +138,12 @@ router.post("/api/update-password", async (req, res) => {
     }
 });
 
-// API for getting all customer details only for an Admin
-router.get('/api/get-users/:id', async (req, res) => {
+// API for getting all customer details for Admin
+router.get('/api/get-users', async (req, res) => {
     try {
+        const admin = await User.find();
 
-        const userId = req.params.id;
-
-        const admin = await User.find({ _id: userId });
-
-        if (admin[0].roll === "Admin") {
+        if (admin[0].role === "Admin") {
 
             const user = await User.find();
             if (!user) {
@@ -169,7 +169,7 @@ router.get('/api/get-user/:id', async (req, res) => {
         const user = await User.find({ _id: userId });
 
         if (!user) {
-            res.status(404).send('User Not Found');
+            return res.status(404).send('User Not Found');
         }
 
         res.status(200).json({ user });

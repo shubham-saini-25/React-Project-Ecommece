@@ -10,12 +10,14 @@ const CustomerOrders = () => {
 
     useEffect(() => {
         const fetchOrderDetails = async () => {
-            try {
-                const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-orders/${authUserId}`);
-                setOrders(data.orders);
-            } catch (error) {
-                console.log(error);
-                toast.error(error.response.data);
+            if (authUserId !== null && authUserId !== undefined) {
+                try {
+                    const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-orders/${authUserId}`);
+                    setOrders(data.orders);
+                } catch (error) {
+                    console.error(error);
+                    toast.error(error.response.data);
+                }
             }
         };
         fetchOrderDetails();

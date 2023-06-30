@@ -1,27 +1,25 @@
 import React, { useContext, useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Navbar from 'react-bootstrap/Navbar';
-import Form from 'react-bootstrap/Form';
-import Nav from 'react-bootstrap/Nav';
-import { useCart } from "react-use-cart";
-import ItemContext from "../../context/ItemContext";
+import { Navbar, Nav, Form, Button } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
+import ItemContext from "../../context/ItemContext";
+import { useCart } from "react-use-cart";
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 function HomeNavbar() {
+    const { search, setSearch, setAuthUserId } = useContext(ItemContext);
     const { accessToken, setAccessToken } = useContext(ItemContext);
-    const { search, setSearch } = useContext(ItemContext);
-    const { setAuthUserId } = useContext(ItemContext);
+    const [userRole, setUserRole] = useState('');
     const { totalUniqueItems } = useCart();
-    const [userRoll, setUserRoll] = useState('');
 
     const removeToken = () => {
         localStorage.removeItem('JWT_Token');
         localStorage.removeItem('cartItems');
         localStorage.removeItem('cartTotal');
         localStorage.removeItem('AuthId');
-        setAccessToken('');
-        setAuthUserId('');
+        setAccessToken(null);
+        setAuthUserId(null);
+        toast.success('User Logged Out Successfully!');
     };
 
     const onClick = (e) => {
@@ -39,11 +37,13 @@ function HomeNavbar() {
     const userId = localStorage.getItem('AuthId');
     useEffect(() => {
         const getUser = async () => {
-            try {
-                const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-user/${userId}`);
-                setUserRoll(res.data.user[0].roll);
-            } catch (err) {
-                toast.error(err.response.message)
+            if (userId !== null && userId !== undefined) {
+                try {
+                    const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-user/${userId}`);
+                    setUserRole(res.data.user[0].role);
+                } catch (err) {
+                    toast.error(err.response.message)
+                }
             }
         }
         getUser();
@@ -54,76 +54,58 @@ function HomeNavbar() {
             <Navbar.Brand style={{ marginLeft: '20px' }}>E-Commerce</Navbar.Brand>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" style={{ marginRight: '20px' }} />
 
-            {(userRoll !== "Admin" || userRoll === undefined || userRoll === null) ?
-                <Navbar.Collapse id="responsive-navbar-nav" style={{ marginLeft: '20px' }}>
+            <Navbar.Collapse id="responsive-navbar-nav" style={{ marginLeft: '20px' }}>
+                <ToastContainer />
+                <Nav className="me-auto">
+                    {userRole === "Admin" ? (
+                        <>
+                            <Link to="/admin/home" className="nav-link">Home</Link>
+                            <Link to="/admin/view-category" className="nav-link">View Category</Link>
+                            <Link to="/admin/view-products" className="nav-link">View Product</Link>
+                            <Link to="/admin/view-customers" className="nav-link">View Customers</Link>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/" className="nav-link">Home</Link>
+                            <Link to="/about" className="nav-link">About</Link>
+                            <Link to="/contactUs" className="nav-link">Contact Us</Link>
+                            <Link to="/my-orders" className="nav-link">My Orders</Link>
+                        </>
+                    )}
+                </Nav>
 
-                    <ToastContainer />
-                    <Nav className="me-auto">
-                        <Nav.Link href="/">Home</Nav.Link>
-                        <Nav.Link href="/about">About</Nav.Link>
-                        <Nav.Link href="/contactUs">Contact Us</Nav.Link>
-                        <Nav.Link href="/my-orders">My Orders</Nav.Link>
+                {accessToken === null && (
+                    <Nav className="middle-nav me-auto fw-bolder">
+                        <Link to="/login" className="nav-link">Login</Link>
+                        <Link to="/register" className="nav-link">Register</Link>
                     </Nav>
+                )}
 
-                    {accessToken === null ?
-                        <>
-                            <Nav className="me-auto fw-bolder">
-                                <Nav.Link href="/login">Login</Nav.Link>
-                                <Nav.Link href="/register">Register</Nav.Link>
-                            </Nav>
+                <Nav className="ml-auto">
+                    <Form className="d-flex" style={{ marginRight: '40px' }}>
+                        <Form.Control type="search" placeholder="Search" className="me-2" aria-label="Search" onChange={onChange} />
+                        <Button variant="outline-success" onClick={onClick}>Search</Button>
+                    </Form>
 
-                            <Form className="d-flex" style={{ marginRight: '40px' }}>
-                                <Form.Control type="search" placeholder="Search" className="me-2" aria-label="Search" onChange={onChange} />
-                                <Button variant="outline-success" onClick={onClick}>Search</Button>
-                            </Form>
+                    {accessToken === null ? (
+                        <Link to="#" style={{ marginRight: '40px', marginTop: '4px' }} onClick={() => toast.info('Please log in to access your Cart')}>
+                            <i className="cartIcon fa fa-shopping-cart fa-2x text-info mr-4 fw-bold" value={0}></i>
+                        </Link>
+                    ) : (
+                        <Link to="/cart-items" style={{ marginRight: '40px', marginTop: '4px' }}>
+                            <i className="cartIcon fa fa-shopping-cart fa-2x text-info mr-4 fw-bold" value={totalUniqueItems}></i>
+                        </Link>
+                    )}
+                </Nav>
 
-                            <Nav.Link href="#" style={{ marginRight: '40px' }} onClick={() => toast.error('please login to access your Cart')}>
-                                <i className="cartIcon fa fa-shopping-cart fa-2x text-info mr-4 fw-bold" value={0}></i>
-                            </Nav.Link>
-                        </>
-                        :
-                        <>
-                            <Form className="d-flex" style={{ marginRight: '10rem' }}>
-                                <Form.Control type="search" placeholder="Search" className="me-2" aria-label="Search" onChange={onChange} />
-                                <Button variant="outline-success" onClick={onClick}>Search</Button>
-                            </Form>
-
-                            <Nav.Link href="/cart-items" style={{ marginRight: '60px' }}>
-                                <i className="cartIcon fa fa-shopping-cart fa-2x text-info mr-4 fw-bold"
-                                    value={totalUniqueItems}>
-                                </i>
-                            </Nav.Link>
-
-                            <Nav className="text-light" style={{ marginRight: '20px' }} onClick={() => removeToken()}>
-                                <Nav.Link href="/login" className='btn btn-outline-secondary text-light'>
-                                    <span className='fa fa-sign-out'></span> Logout
-                                </Nav.Link>
-                            </Nav>
-                        </>
-                    }
-                </Navbar.Collapse>
-                :
-                <Navbar.Collapse id="responsive-navbar-nav" style={{ marginLeft: '20px' }}>
-
-                    <ToastContainer />
-                    <Nav className="me-auto">
-                        <Nav.Link href="/admin/home">Home</Nav.Link>
-                        <Nav.Link href="/admin/add-products">Add Product</Nav.Link>
-                        <Nav.Link href="/admin/view-products">View Product</Nav.Link>
-                        <Nav.Link href="/admin/view-users">View Customers</Nav.Link>
+                {accessToken !== null && (
+                    <Nav className="text-light" style={{ marginRight: '20px' }} onClick={() => removeToken()}>
+                        <Link to="/login" className='btn btn-outline-secondary text-light'>
+                            <span className='fa fa-sign-out'></span> Logout
+                        </Link>
                     </Nav>
-
-                    {accessToken !== null &&
-                        <>
-                            <Nav className="text-light" style={{ marginRight: '20px' }} onClick={() => removeToken()}>
-                                <Nav.Link href="/login" className='btn btn-outline-secondary text-light'>
-                                    <span className='fa fa-sign-out'></span> Logout
-                                </Nav.Link>
-                            </Nav>
-                        </>
-                    }
-                </Navbar.Collapse>
-            }
+                )}
+            </Navbar.Collapse>
         </Navbar >
     );
 }

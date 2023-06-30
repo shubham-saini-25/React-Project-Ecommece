@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Container, Form, Modal } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
@@ -6,19 +5,19 @@ import ItemContext from '../../context/ItemContext';
 import { useCart } from 'react-use-cart';
 import html2pdf from 'html2pdf.js';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 const PaymentInvoice = () => {
-    const [show, setShow] = useState(false);
-    const [email, setEmail] = useState('');
-    const [invoiceNumber, setInvoiceNumber] = useState('');
-    const { emptyCart } = useCart();
-    const { authUserId } = useContext(ItemContext);
-    const { shippingCharges } = useContext(ItemContext);
-    const [customerInfo, setCustomerInfo] = useState({});
-    const [cartItems, setCartItems] = useState([]);
-    const [cartTotal, setCartTotal] = useState(0);
-    const [sendEmailBtnText, setSendEmailBtnText] = useState('Send');
     const paymentIntentId = new URLSearchParams(window.location.search).get('payment_intent');
+    const [email, setEmail] = useState('');
+    const [show, setShow] = useState(false);
+    const [cartTotal, setCartTotal] = useState(0);
+    const [cartItems, setCartItems] = useState([]);
+    const [customerInfo, setCustomerInfo] = useState({});
+    const [invoiceNumber, setInvoiceNumber] = useState('');
+    const { authUserId, shippingCharges } = useContext(ItemContext);
+    const [sendEmailBtnText, setSendEmailBtnText] = useState('Send');
+    const { emptyCart } = useCart();
 
     let today = new Date();
     let dateTime = today.toLocaleString('en-US', {
@@ -55,7 +54,7 @@ const PaymentInvoice = () => {
             try {
                 await axios.post(url, orderDetails, { headers: headers });
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         };
 
@@ -91,12 +90,12 @@ const PaymentInvoice = () => {
                     shippingCharges, cartTotal, dateTime,
                 });
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         };
         fetchCustomerDetails();
         saveOrderDetails();
-    }, [paymentIntentId]);
+    }, [authUserId, cartItems, cartTotal, emptyCart, invoiceNumber, paymentIntentId, shippingCharges, dateTime]);
 
     const handleShow = () => {
         setShow(true);

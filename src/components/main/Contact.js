@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import ConatcUsImg from '../../images/contactUs.png';
+import { Row, Col, Form, Button, Card, Container } from "react-bootstrap";
+import contactImg from '../../images/homeImages/contact.png';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
 function ContactForm() {
@@ -34,41 +32,59 @@ function ContactForm() {
                 setFormBtnStatus('Send');
             }
         } catch (err) {
-            console.log(err)
+            console.error(err);
             toast.error(err.message);
         }
     }
 
     return (
-        <div className="Contact Card">
+        <Container id="Contact">
+            <ToastContainer />
+            <Card className='contactUs'>
+                <Card.Header>
+                    <h1 className="text-center mt-2">Contact Us</h1>
+                </Card.Header>
+                <Card.Body>
+                    <Row className='d-flex justify-content-center'>
+                        <Col md={5} className='contactUsImgBox'>
+                            <Card.Img src={contactImg} alt='Contact-Me' className='contactImg' />
+                        </Col>
 
-            <div className="logo">
-                <img src={ConatcUsImg} alt="user" />
-            </div>
-            <h3 className="text-center mt-4">Contact Us</h3>
+                        <Col md={6} className='mt-2'>
+                            <Form className="p-3 mt-3" autoComplete='off' onSubmit={handleSubmit}>
+                                <Form.Group className="mb-3">
+                                    <label className="form-label" htmlFor="name">Name</label>
+                                    <input className="form-control" type="text" name="name" value={name} onChange={(e) => setName(e.target.value)} required />
+                                </Form.Group>
 
-            <Form className="p-3 mt-3" autoComplete='off' onSubmit={handleSubmit}>
+                                <Form.Group className="mb-3">
+                                    <label className="form-label" htmlFor="email">Email</label>
+                                    <input className="form-control" type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                </Form.Group>
 
-                <Form.Group className="mb-3">
-                    <label className="form-label" htmlFor="name">Name</label>
-                    <input className="form-control" type="text" name="name" value={name} onChange={(e) => setName(e.target.value)} required />
-                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <label className="form-label" htmlFor="message">Message</label>
+                                    <textarea className="form-control" name="message" value={message} onChange={(e) => setMessage(e.target.value)} required style={{ height: '85px' }} />
+                                </Form.Group>
 
-                <Form.Group className="mb-3">
-                    <label className="form-label" htmlFor="email">Email</label>
-                    <input className="form-control" type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                    <label className="form-label" htmlFor="message">Message</label>
-                    <textarea className="form-control" name="message" value={message} onChange={(e) => setMessage(e.target.value)} required />
-                </Form.Group>
-
-                <Button block="true" type="submit" disabled={!validateContactForm()}>{formBtnStatus}</Button>
-                <ToastContainer />
-
-            </Form>
-        </div>
+                                <div className='text-center'>
+                                    <Button type="submit" className='mt-2' disabled={!validateContactForm()}>{formBtnStatus}</Button>
+                                </div>
+                            </Form>
+                        </Col>
+                    </Row>
+                </Card.Body>
+                <Card.Footer>
+                    <div className='socialIcons'>
+                        <i className='fa fa-instagram fa-2x'></i>
+                        <i className='fa fa-facebook fa-2x'></i>
+                        <i className='fa fa-whatsapp fa-2x'></i>
+                        <i className='fa fa-twitter fa-2x'></i>
+                        <i className='fa fa-youtube-play fa-2x'></i>
+                    </div>
+                </Card.Footer>
+            </Card>
+        </Container>
     );
 }
 

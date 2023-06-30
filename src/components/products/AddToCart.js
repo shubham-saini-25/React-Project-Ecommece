@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Card, Row, Col, Container, Form } from "react-bootstrap";
-import Modal from 'react-bootstrap/Modal';
-import { useCart } from "react-use-cart";
+import { Modal, Button, Card, Row, Col, Container, Form } from "react-bootstrap";
 import { ToastContainer, toast } from 'react-toastify';
 import ItemContext from '../../context/ItemContext';
 import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
 import PaymentForm from '../payment/PaymentForm';
+import { loadStripe } from '@stripe/stripe-js';
+import { useCart } from "react-use-cart";
+import Swal from 'sweetalert2';
 import axios from 'axios';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
@@ -51,6 +51,46 @@ const AddToCart = () => {
         setShow(false)
     };
 
+    const deleteItem = (itemId) => {
+        try {
+            Swal.fire({
+                title: 'Are you sure you want to delete this item?',
+                showConfirmButton: true,
+                showCancelButton: true,
+                confirmButtonText: "Delete",
+                cancelButtonText: "Cancel",
+                icon: 'warning',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    removeItem(itemId);
+                    toast.success('Item deleted successfully!');
+                }
+            });
+        } catch (err) {
+            toast.error(err.response.data)
+        }
+    }
+
+    const clearCart = () => {
+        try {
+            Swal.fire({
+                title: 'Are you really want to clear the Cart?',
+                showConfirmButton: true,
+                showCancelButton: true,
+                confirmButtonText: "Delete",
+                cancelButtonText: "Cancel",
+                icon: 'warning',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    emptyCart();
+                    toast.success('Your cart is cleared successfully!');
+                }
+            });
+        } catch (err) {
+            toast.error(err.response.data)
+        }
+    }
+
     if (isEmpty) {
         return (
             <Container className="py-5 h-100">
@@ -79,7 +119,7 @@ const AddToCart = () => {
                     <Col md="10">
                         <div className="d-flex justify-content-between mb-4 cursor-pointer">
                             <h3 className="fs-1 fw-normal text-center text-black mt-3">Shopping Cart ({totalUniqueItems})</h3>
-                            <Button className='h-25 mt-4' onClick={() => { emptyCart(); toast.success('Your cart is cleared successfully') }}>Empty Cart</Button>
+                            <Button className='h-25 mt-4' onClick={() => clearCart()}>Empty Cart</Button>
                         </div>
                         <hr />
 
@@ -88,7 +128,7 @@ const AddToCart = () => {
                                 <Card.Body className="p-4">
                                     <Row className="justify-content-between align-items-center">
                                         <Col md="2" lg="2" xl="2">
-                                            <Card.Img className="rounded-3" fluid="true" src={`${process.env.REACT_APP_API_URL}/${item.image}`} alt={item.name} />
+                                            <Card.Img className="rounded-3" fluid="true" src={`${process.env.REACT_APP_API_URL}/product_img/${item.image}`} alt={item.name} />
                                         </Col>
 
                                         <Col md="3" lg="3" xl="3">
@@ -113,9 +153,7 @@ const AddToCart = () => {
                                         </Col>
 
                                         <Col md="1" lg="1" xl="1" className="text-end">
-                                            <button className='fa fa-trash fa-2x text-danger bg-light border border-0'
-                                                onClick={() => { removeItem(item.id); toast.success('Item deleted successfully!') }}>
-                                            </button>
+                                            <button className='fa fa-trash fa-2x text-danger bg-light border border-0' onClick={() => deleteItem(item.id)}></button>
                                         </Col>
                                     </Row>
                                 </Card.Body>
@@ -123,8 +161,7 @@ const AddToCart = () => {
                         ))}
                         <hr />
 
-                        <Button className="btn btn-warning fw-bold d-flex mx-auto mb-4 border border-1 border-dark" size="lg"
-                            onClick={handleShow} >
+                        <Button className="btn btn-warning fw-bold d-flex mx-auto mb-4 border border-1 border-dark" size="lg" onClick={handleShow}>
                             <i className="fa fa-credit-card my-auto"></i>
                             &nbsp; Proceed to Checkout &nbsp;
                             <i className='fa fa-long-arrow-right my-auto'></i>

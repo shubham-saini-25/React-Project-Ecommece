@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import RegisterUserImg from '../../images/register.png'
-import { Link } from "react-router-dom";
+import RegisterUserImg from '../../images/register.png';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { FaUser, FaUserCircle, FaKey, FaMobileAlt } from 'react-icons/fa';
+import { Form, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import axios from 'axios';
+import { FaUser, FaUserCircle, FaKey, FaMobileAlt } from 'react-icons/fa';
 
 function Register() {
     const [name, setName] = useState("");

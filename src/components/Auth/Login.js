@@ -1,16 +1,14 @@
 import React, { useContext, useState } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import { FaUser, FaKey } from 'react-icons/fa';
-import LoginUserImg from '../../images/login.png'
 import { ToastContainer, toast } from 'react-toastify';
 import { Link, useNavigate } from "react-router-dom";
 import ItemContext from "../../context/ItemContext";
+import LoginUserImg from '../../images/login.png';
+import { Form, Button } from "react-bootstrap";
+import { FaUser, FaKey } from 'react-icons/fa';
 import axios from 'axios';
 
 function Login() {
-    const { accessToken, setAccessToken } = useContext(ItemContext);
-    const { setAuthUserId } = useContext(ItemContext);
+    const { setAccessToken, setAuthUserId } = useContext(ItemContext);
     const [loginBtnText, setLoginBtnText] = useState('Login');
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
@@ -25,23 +23,18 @@ function Login() {
 
         const userData = { email, password };
         const url = `${process.env.REACT_APP_API_URL}/api/login`;
-        const headers = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + accessToken
-        };
 
         try {
-            const res = await axios.post(url, userData, { headers: headers });
+            const res = await axios.post(url, userData);
             localStorage.setItem('JWT_Token', res.data.token);
             localStorage.setItem('AuthId', res.data.userId);
-            console.log(res.data);
             setLoginBtnText(<i className="fa fa-spinner fa-spin"></i>);
             toast.success(res.data['message']);
             setAccessToken(res.data.token);
             setAuthUserId(res.data.userId);
             setEmail('');
             setPassword('');
-            setTimeout(() => { res.data.userId === "Customer" ? navigate('/') : navigate('/admin/home') }, 2000);
+            setTimeout(() => { res.data.role === "Customer" ? navigate('/') : navigate('/admin/home') }, 1500);
         } catch (err) {
             setLoginBtnText('Login')
             toast.error(err.response.data)

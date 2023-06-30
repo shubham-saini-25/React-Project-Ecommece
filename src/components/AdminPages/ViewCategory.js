@@ -1,51 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Button, Modal } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
-import UpdateProduct from './UpdateProduct';
-import AddProduct from './AddProduct';
+import { fetchCategories } from '../../constants/Api';
+import UpdateCategory from './UpdateCategory';
+import AddCategory from './AddCategory';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { fetchCategories, fetchProducts } from '../../constants/Api';
 
-const ViewProducts = () => {
-    const [selectedItemId, setSelectedItemId] = useState(null);
+const ViewCategory = () => {
+    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
     const [category, setCategory] = useState([]);
-    const [product, setProduct] = useState([]);
     const [show, setShow] = useState(false);
     const [btn, setBtn] = useState('');
 
-    const handleShow = (itemId) => {
+    const handleShow = (categoryId) => {
         setShow(true);
-        setSelectedItemId(itemId);
+        setSelectedCategoryId(categoryId);
     }
 
     const handleHide = () => {
-        setShow(false)
+        setShow(false);
     };
 
     const handleSubmit = async () => {
-        if (window.location.pathname === '/admin/view-products') {
+        if (window.location.pathname === '/admin/view-category') {
             try {
-                const responseCategory = await fetchCategories();
-                if (responseCategory) {
-                    setCategory(responseCategory.category);
-                }
-
-                const responseProduct = await fetchProducts();
-                if (responseProduct) {
-                    setProduct(responseProduct.products);
+                const response = await fetchCategories();
+                if (response) {
+                    setCategory(response.category);
                 }
             } catch (err) {
                 toast.error(err.response.data)
             }
         }
     };
-    handleSubmit();
 
-    const deleteProduct = (itemId) => {
+    useEffect(() => {
+        handleSubmit();
+    }, [selectedCategoryId]);
+
+    const deleteCategory = (categoryId) => {
         try {
             Swal.fire({
-                title: 'Are you sure you want to delete this product?',
+                title: 'Are you sure you want to delete this category?',
                 showConfirmButton: true,
                 showCancelButton: true,
                 confirmButtonText: "Delete",
@@ -53,7 +50,7 @@ const ViewProducts = () => {
                 icon: 'warning',
             }).then(async (result) => {
                 if (result.isConfirmed) {
-                    const result = await axios.delete(`${process.env.REACT_APP_API_URL}/api/delete-product/${itemId}`);
+                    const result = await axios.delete(`${process.env.REACT_APP_API_URL}/api/delete-category/${categoryId}`);
                     toast.success(result.data.message);
                 }
             });
@@ -67,9 +64,9 @@ const ViewProducts = () => {
             <Container className="admin mt-5 h-100 bg-light rounded-4">
                 <ToastContainer />
                 <div className="d-flex justify-content-around">
-                    <h3 className="fs-1 fw-normal text-black mt-4">Product List</h3>
+                    <h3 className="fs-1 fw-normal text-black mt-4">Category List</h3>
                     <div className='mt-4'>
-                        <Button className='btn btn-primary' onClick={() => { handleShow(selectedItemId); setBtn('addProduct') }}>Add Product</Button>
+                        <Button className='btn btn-primary' onClick={() => { handleShow(selectedCategoryId); setBtn('addCategory') }}>Add Category</Button>
                     </div>
                 </div>
                 <hr />
@@ -80,27 +77,21 @@ const ViewProducts = () => {
                                 <th>S.No.</th>
                                 <th>Image</th>
                                 <th>Name</th>
-                                <th>Description</th>
-                                <th>Category</th>
-                                <th>Price</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody className='fw-bold'>
-                            {product.map((item, idx) => (
+                            {category.map((item, idx) => (
                                 <tr key={idx}>
                                     <td>{idx + 1}</td>
                                     <td>
-                                        <img src={`${process.env.REACT_APP_API_URL}/product_img/${item.image}`} alt="product_img" width={100} />
+                                        <img src={`${process.env.REACT_APP_API_URL}/category_img/${item.image}`} alt="category_img" width={100} />
                                     </td>
                                     <td>{item.name}</td>
-                                    <td>{item.description}</td>
-                                    <td>{item.category}</td>
-                                    <td>{item.price}</td>
                                     <td>
                                         <div className='d-flex justify-content-center fa-2x'>
-                                            <Button className='fa fa-pencil text-primary bg-transparent border-0' onClick={() => { handleShow(item._id); setBtn('updateProduct') }}></Button>
-                                            <Button className='fa fa-trash text-danger bg-transparent border-0' onClick={() => deleteProduct(item._id)}></Button>
+                                            <Button className='fa fa-pencil text-primary bg-transparent border-0' onClick={() => { handleShow(item._id); setBtn('updateCategory') }}></Button>
+                                            <Button className='fa fa-trash text-danger bg-transparent border-0' onClick={() => deleteCategory(item._id)}></Button>
                                         </div>
                                     </td>
                                 </tr>
@@ -113,14 +104,14 @@ const ViewProducts = () => {
             <Modal show={show} onHide={handleHide} centered>
                 <Modal.Header closeButton onClick={handleHide}>
                     <Modal.Title className='fs-2 mx-auto px-5'>
-                        {btn === 'addProduct' ? 'Add Product' : 'Update Product'}
+                        {btn === 'addCategory' ? 'Add Category' : 'Update Category'}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {btn === 'addProduct' ? (
-                        <AddProduct category={category} closeModal={handleHide} />
+                    {btn === 'addCategory' ? (
+                        <AddCategory category={category} closeModal={handleHide} />
                     ) : (
-                        selectedItemId && <UpdateProduct product={product} itemId={selectedItemId} closeModal={handleHide} />
+                        selectedCategoryId && <UpdateCategory category={category} categoryId={selectedCategoryId} closeModal={handleHide} />
                     )}
                 </Modal.Body>
             </Modal>
@@ -128,4 +119,4 @@ const ViewProducts = () => {
     );
 }
 
-export default ViewProducts;
+export default ViewCategory;

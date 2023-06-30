@@ -7,7 +7,7 @@ const User = require("../models/user");
 // API for save order details
 router.post("/api/save-order", async (req, res) => {
     try {
-        const { order, buyerId, paymentIntentId } = req.body;
+        const { order, userId, paymentIntentId } = req.body;
 
         const orderDate = new Date().toUTCString().slice(5, 16);
         const _id = require('mongodb').ObjectId;
@@ -23,7 +23,7 @@ router.post("/api/save-order", async (req, res) => {
                     _id: new _id(),
                     paymentIntentId,
                     orderDate,
-                    buyerId,
+                    userId,
                 });
                 newOrders.push(newOrder);
             }
@@ -36,15 +36,15 @@ router.post("/api/save-order", async (req, res) => {
 });
 
 // API for fetch order details by user ID
-router.get('/api/get-orders/:buyerId', async (req, res) => {
-    const buyerId = req.params.buyerId;
+router.get('/api/get-orders/:userId', async (req, res) => {
+    const userId = req.params.userId;
 
     try {
-        const auth = await User.find({ _id: buyerId });
+        const auth = await User.findOne({ _id: userId });
 
-        if (auth[0].roll === "Customer") {
+        if (auth[0].role === "Customer") {
             // Fetch orders from the database based on the user ID
-            const orders = await Order.find({ buyerId });
+            const orders = await Order.find({ userId });
 
             res.status(200).json({ orders });
         } else {

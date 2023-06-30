@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import { FaUser, FaKey } from 'react-icons/fa';
-import ForgetPasswordImg from '../../images/login.png'
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import ForgetPasswordImg from '../../images/login.png';
+import { Form, Button } from "react-bootstrap";
+import { FaUser, FaKey } from 'react-icons/fa';
 import { Link } from "react-router-dom";
 import axios from 'axios';
 

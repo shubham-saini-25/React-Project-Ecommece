@@ -4,15 +4,16 @@ const generateUniqueId = require('generate-unique-id');
 
 // module for uploading product image 
 const multer = require('multer');
-const timestamp = Date.now();
 const path = require('path');
 const fs = require('fs');
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => { cb(null, path.join(__dirname, '../uploads/')) },
+    destination: (req, file, cb) => { cb(null, path.join(__dirname, '../uploads/product_img/')) },
     filename: (req, file, cb) => {
-        cb(null, file.originalname.replace(file.originalname,
-            file.mimetype.split('/')[0] + '_' + timestamp + '.' + file.mimetype.split('/')[1]))
+        const timestamp = Date.now();
+        const fileExtension = file.originalname.split('.').pop();
+        const newFilename = file.fieldname + '_' + timestamp + '.' + fileExtension;
+        cb(null, newFilename);
     },
 });
 
@@ -38,12 +39,12 @@ router.post("/api/add-products", upload.single('image'), async (req, res) => {
 
         const admin = await User.find({ _id: createdBy });
 
-        if (admin[0].roll === "Admin") {
+        if (admin[0].role === "Admin") {
             const id = generateUniqueId();
             if (req.file === undefined) {
                 res.status(400).send("Image is required");
             }
-            const image = req.file.mimetype.split('/')[0] + '_' + timestamp + '.' + req.file.mimetype.split('/')[1];
+            const image = req.file.filename;
 
             // Validate product information input
             if (!(name && category && description && price && image)) {
@@ -107,7 +108,7 @@ router.post("/api/update-product/:id", upload.single('image'), async (req, res) 
             product.description = req.body.description;
         }
         if (req.file) {
-            product.image = req.file.mimetype.split('/')[0] + '_' + timestamp + '.' + req.file.mimetype.split('/')[1];
+            product.image = req.file.filename;
         }
 
         // Save the updated product
@@ -137,11 +138,14 @@ router.delete('/api/delete-product/:id', async (req, res) => {
         }
 
         // Delete the associated image file
-        fs.unlink(`../uploads/${deleteProduct.image}`, (err) => {
-            if (err) {
-                console.error(err);
-            }
-        });
+        const filePath = path.join(__dirname, `../uploads/product_img/${deleteProduct.image}`);
+        try {
+            fs.unlinkSync(filePath);
+            console.log(`File deleted: ${filePath}`);
+        } catch (err) {
+            console.error(`Error deleting file: ${filePath}`);
+            console.error(err);
+        }
 
         res.status(200).json({ message: 'Product deleted successfully!' });
     } catch (err) {
@@ -157,7 +161,7 @@ router.get('/api/get-products/:id', async (req, res) => {
 
         const admin = await User.find({ _id: userId });
 
-        if (admin[0].roll === "Admin") {
+        if (admin[0].role === "Admin") {
             const products = await Product.find();
 
             if (!products) {
@@ -184,7 +188,7 @@ router.get('/api/get-products', async (req, res) => {
             res.status(404).send('No Product Found');
         }
 
-        res.status(200).json({ products, });
+        res.status(200).json({ products });
     } catch (err) {
         console.log(err);
         res.status(500).send('An error occurred while fetching the data');

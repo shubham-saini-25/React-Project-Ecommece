@@ -1,138 +1,43 @@
 import React from 'react';
 import App from './App';
+import About from './components/main/About';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
-import ForgetPassword from './components/Auth/FogetPassword';
-import { BrowserRouter, Route, RouterProvider, Routes, createBrowserRouter } from "react-router-dom";
+import HomeNavbar from './components/main/Navbar';
 import ContactForm from './components/main/Contact';
-import About from './components/main/About';
-import Item from './components/products/Item';
-import HomeNavbar from "./components/main/Navbar";
-import { BrowserRouter as Router } from "react-router-dom";
+import Products from './components/products/Products';
 import AddToCart from './components/products/AddToCart';
-import PaymentInvoice from './components/payment/PaymentInvoice';
-import AddProduct from './components/AdminPages/AddProduct';
-import AdminHomePage from './components/AdminPages/AdminHomePage';
+import ForgetPassword from './components/Auth/FogetPassword';
+import ViewCategory from './components/AdminPages/ViewCategory';
 import ViewProducts from './components/AdminPages/ViewProducts';
-import UpdateProduct from './components/AdminPages/UpdateProduct';
+import PaymentInvoice from './components/payment/PaymentInvoice';
+import AdminHomePage from './components/AdminPages/AdminHomePage';
 import ViewCustomers from './components/AdminPages/ViewCustomers';
 import CustomerOrders from './components/products/CustomerOrders';
-
-// const Routing = () => {
-//     <BrowserRouter>
-//         <Routes>
-//             <Route path='/' element={<App />}></Route>
-//             <Route path='/login' element={<Login />}></Route>
-//             <Route path='/register' element={<Register />}></Route>
-//             <Route path='/forget-password' element={<ForgetPassword />}></Route>
-//             <Route path='/about' element={<About />}></Route>
-//             <Route path='/contactUs' element={<ContactForm />}></Route>
-//             <Route path='/items/:items' element={<Item />}></Route>
-//         </Routes>
-//     </BrowserRouter>
-// };
-
-// export default Routing;
-
-const router = createBrowserRouter([
-    {
-        path: "/",
-        element: (
-            <App />
-        ),
-    },
-    {
-        path: "/admin/home",
-        element: (
-            <AdminHomePage />
-        ),
-    },
-    {
-        path: "/login",
-        element: (
-            <Login />
-        ),
-    },
-    {
-        path: "/forget-password",
-        element: (
-            <ForgetPassword />
-        ),
-    },
-    {
-        path: "/register",
-        element: (
-            <Register />
-        ),
-    },
-    {
-        path: "/about",
-        element: (
-            <About />
-        ),
-    },
-    {
-        path: "/contactUs",
-        element: (
-            <ContactForm />
-        ),
-    },
-    {
-        path: "/my-orders",
-        element: (
-            <CustomerOrders />
-        ),
-    },
-    {
-        path: "/cart-items",
-        element: (
-            <AddToCart />
-        ),
-    },
-    {
-        path: "/payment-invoice",
-        element: (
-            <PaymentInvoice />
-        ),
-    },
-    {
-        path: "/admin/add-products",
-        element: (
-            <AddProduct />
-        ),
-    },
-    {
-        path: "/admin/update-products",
-        element: (
-            <UpdateProduct />
-        ),
-    },
-    {
-        path: "/admin/view-products",
-        element: (
-            <ViewProducts />
-        ),
-    },
-    {
-        path: "/admin/view-users",
-        element: (
-            <ViewCustomers />
-        ),
-    },
-    {
-        path: "items/:items",
-        element: (
-            <Item />
-        ),
-    },
-]);
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const Routing = () => {
     return (
-        <>
-            <RouterProvider router={router} />
-        </>
-    )
-}
+        <Router>
+            <HomeNavbar />
+            <Routes>
+                <Route path="/" element={<App />} />
+                <Route path="/admin/home" element={<AdminHomePage />} />
+                <Route path="/admin/view-category" element={<ViewCategory />} />
+                <Route path="/admin/view-products" element={<ViewProducts />} />
+                <Route path="/admin/view-customers" element={<ViewCustomers />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forget-password" element={<ForgetPassword />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contactUs" element={<ContactForm />} />
+                <Route path="/cart-items" element={<AddToCart />} />
+                <Route path="/my-orders" element={<CustomerOrders />} />
+                <Route path="/payment-invoice" element={<PaymentInvoice />} />
+                <Route path="items/:items" element={<Products />} />
+            </Routes>
+        </Router>
+    );
+};
 
 export default Routing;

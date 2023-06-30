@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Card, Form, Modal } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
+import { Button, Card, Form } from 'react-bootstrap';
 import axios from 'axios';
 
 const UpdateProduct = (props) => {
@@ -12,7 +12,7 @@ const UpdateProduct = (props) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (name.length === 0 && description.length === 0 && price.length === 0) {
+        if (name.length === 0 && description.length === 0 && price.length === 0 && image === null) {
             return toast.error('Please enter data for updation');
         }
 
@@ -26,14 +26,13 @@ const UpdateProduct = (props) => {
         try {
             const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/update-product/${props.itemId}`, formData);
             toast.success(res.data.message);
-            window.location.reload();
         } catch (err) {
             toast.error(err.response.data);
         }
     };
 
     return (
-        <Modal.Body>
+        <>
             <ToastContainer />
             <Form onSubmit={handleSubmit}>
                 <Card>
@@ -64,11 +63,11 @@ const UpdateProduct = (props) => {
                     </Card.Body>
 
                     <Card.Footer className='d-flex justify-content-center'>
-                        <Button type="submit">Update Product</Button>
+                        <Button type="submit" onClick={props.closeModal}>Update Product</Button>
                     </Card.Footer>
                 </Card>
             </Form>
-        </Modal.Body>
+        </>
     );
 }
 

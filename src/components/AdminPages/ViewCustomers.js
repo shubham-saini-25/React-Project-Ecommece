@@ -1,18 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Container, Button } from 'react-bootstrap';
-import ItemContext from '../../context/ItemContext';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
 const ViewCustomers = () => {
     const [users, setUsers] = useState([]);
-    const { authUserId } = useContext(ItemContext);
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async () => {
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-users/${authUserId}`);
-            const result = data.user.filter(user => user.roll === 'Customer');
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-users`);
+            const result = data.user.filter(user => user.role === 'Customer');
             setUsers(result);
             toast.success(data.message);
         } catch (err) {
@@ -57,7 +55,7 @@ const ViewCustomers = () => {
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Contact</th>
-                                <th>Roll</th>
+                                <th>role</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -68,7 +66,7 @@ const ViewCustomers = () => {
                                     <td>{user.name}</td>
                                     <td>{user.email}</td>
                                     <td>{user.phoneNumber}</td>
-                                    <td>{user.roll}</td>
+                                    <td>{user.role}</td>
                                     <td>
                                         <div className='d-flex justify-content-center fa-2x'>
                                             <Button className='fa fa-trash text-danger bg-transparent border-0' onClick={() => deleteUser(user._id)}></Button>
