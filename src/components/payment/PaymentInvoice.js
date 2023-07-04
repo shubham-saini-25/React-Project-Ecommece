@@ -95,7 +95,7 @@ const PaymentInvoice = () => {
         };
         fetchCustomerDetails();
         saveOrderDetails();
-    }, [authUserId, cartItems, cartTotal, emptyCart, invoiceNumber, paymentIntentId, shippingCharges, dateTime]);
+    }, [authUserId, cartTotal, shippingCharges]);
 
     const handleShow = () => {
         setShow(true);

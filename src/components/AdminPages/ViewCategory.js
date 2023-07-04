@@ -8,14 +8,14 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 
 const ViewCategory = () => {
-    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+    const [selectedCategory, setSelectedCategory] = useState(null);
     const [category, setCategory] = useState([]);
     const [show, setShow] = useState(false);
     const [btn, setBtn] = useState('');
 
-    const handleShow = (categoryId) => {
+    const handleShow = (Category) => {
         setShow(true);
-        setSelectedCategoryId(categoryId);
+        setSelectedCategory(Category);
     }
 
     const handleHide = () => {
@@ -34,10 +34,7 @@ const ViewCategory = () => {
             }
         }
     };
-
-    useEffect(() => {
-        handleSubmit();
-    }, [selectedCategoryId]);
+    handleSubmit();
 
     const deleteCategory = (categoryId) => {
         try {
@@ -66,7 +63,7 @@ const ViewCategory = () => {
                 <div className="d-flex justify-content-around">
                     <h3 className="fs-1 fw-normal text-black mt-4">Category List</h3>
                     <div className='mt-4'>
-                        <Button className='btn btn-primary' onClick={() => { handleShow(selectedCategoryId); setBtn('addCategory') }}>Add Category</Button>
+                        <Button className='btn btn-primary' onClick={() => { handleShow(selectedCategory); setBtn('addCategory') }}>Add Category</Button>
                     </div>
                 </div>
                 <hr />
@@ -90,7 +87,7 @@ const ViewCategory = () => {
                                     <td>{item.name}</td>
                                     <td>
                                         <div className='d-flex justify-content-center fa-2x'>
-                                            <Button className='fa fa-pencil text-primary bg-transparent border-0' onClick={() => { handleShow(item._id); setBtn('updateCategory') }}></Button>
+                                            <Button className='fa fa-pencil text-primary bg-transparent border-0' onClick={() => { handleShow(item); setBtn('updateCategory') }}></Button>
                                             <Button className='fa fa-trash text-danger bg-transparent border-0' onClick={() => deleteCategory(item._id)}></Button>
                                         </div>
                                     </td>
@@ -109,9 +106,9 @@ const ViewCategory = () => {
                 </Modal.Header>
                 <Modal.Body>
                     {btn === 'addCategory' ? (
-                        <AddCategory category={category} closeModal={handleHide} />
+                        <AddCategory closeModal={handleHide} />
                     ) : (
-                        selectedCategoryId && <UpdateCategory category={category} categoryId={selectedCategoryId} closeModal={handleHide} />
+                        selectedCategory && <UpdateCategory category={selectedCategory} closeModal={handleHide} />
                     )}
                 </Modal.Body>
             </Modal>

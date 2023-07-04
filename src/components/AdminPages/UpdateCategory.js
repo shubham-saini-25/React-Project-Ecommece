@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Button, Card, Form } from 'react-bootstrap';
 import axios from 'axios';
 
 const UpdateCategory = (props) => {
-    const [name, setName] = useState('');
+    const [name, setName] = useState(props.category.name);
     const [image, setImage] = useState(null);
 
     const handleSubmit = async (event) => {
@@ -20,7 +20,7 @@ const UpdateCategory = (props) => {
         formData.append('image', image);
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/update-category/${props.categoryId}`, formData);
+            const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/update-category/${props.category._id}`, formData);
             toast.success(res.data.message);
             setName('');
             setImage(null);

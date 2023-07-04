@@ -8,15 +8,15 @@ import axios from 'axios';
 import { fetchCategories, fetchProducts } from '../../constants/Api';
 
 const ViewProducts = () => {
-    const [selectedItemId, setSelectedItemId] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState(null);
     const [category, setCategory] = useState([]);
     const [product, setProduct] = useState([]);
     const [show, setShow] = useState(false);
     const [btn, setBtn] = useState('');
 
-    const handleShow = (itemId) => {
+    const handleShow = (item) => {
         setShow(true);
-        setSelectedItemId(itemId);
+        setSelectedProduct(item);
     }
 
     const handleHide = () => {
@@ -69,7 +69,7 @@ const ViewProducts = () => {
                 <div className="d-flex justify-content-around">
                     <h3 className="fs-1 fw-normal text-black mt-4">Product List</h3>
                     <div className='mt-4'>
-                        <Button className='btn btn-primary' onClick={() => { handleShow(selectedItemId); setBtn('addProduct') }}>Add Product</Button>
+                        <Button className='btn btn-primary' onClick={() => { handleShow(selectedProduct); setBtn('addProduct') }}>Add Product</Button>
                     </div>
                 </div>
                 <hr />
@@ -99,7 +99,7 @@ const ViewProducts = () => {
                                     <td>{item.price}</td>
                                     <td>
                                         <div className='d-flex justify-content-center fa-2x'>
-                                            <Button className='fa fa-pencil text-primary bg-transparent border-0' onClick={() => { handleShow(item._id); setBtn('updateProduct') }}></Button>
+                                            <Button className='fa fa-pencil text-primary bg-transparent border-0' onClick={() => { handleShow(item); setBtn('updateProduct') }}></Button>
                                             <Button className='fa fa-trash text-danger bg-transparent border-0' onClick={() => deleteProduct(item._id)}></Button>
                                         </div>
                                     </td>
@@ -120,7 +120,7 @@ const ViewProducts = () => {
                     {btn === 'addProduct' ? (
                         <AddProduct category={category} closeModal={handleHide} />
                     ) : (
-                        selectedItemId && <UpdateProduct product={product} itemId={selectedItemId} closeModal={handleHide} />
+                        selectedProduct && <UpdateProduct category={category} product={selectedProduct} closeModal={handleHide} />
                     )}
                 </Modal.Body>
             </Modal>

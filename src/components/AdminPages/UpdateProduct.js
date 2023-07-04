@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Button, Card, Form } from 'react-bootstrap';
 import axios from 'axios';
@@ -6,8 +6,20 @@ import axios from 'axios';
 const UpdateProduct = (props) => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+    const [category, setCategory] = useState('');
     const [price, setPrice] = useState('');
     const [image, setImage] = useState(null);
+    const categoryList = Object.values(props.category);
+
+    useEffect(() => {
+        if (props.product) {
+            const { name, description, category, price } = props.product;
+            setName(name);
+            setDescription(description);
+            setCategory(category)
+            setPrice(price);
+        }
+    }, [props.product]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -21,10 +33,11 @@ const UpdateProduct = (props) => {
         formData.append('name', name);
         formData.append('price', price);
         formData.append('description', description);
+        formData.append('category', category);
         formData.append('image', image);
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/update-product/${props.itemId}`, formData);
+            const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/update-product/${props.product._id}`, formData);
             toast.success(res.data.message);
         } catch (err) {
             toast.error(err.response.data);
@@ -50,6 +63,18 @@ const UpdateProduct = (props) => {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
+                            <Form.Label>Product Category</Form.Label>
+                            <Form.Control className='fs-5' as="select" value={category} onChange={(e) => setCategory(e.target.value)} >
+                                <option value="">--Select a Category--</option>
+                                {categoryList.map((item) => (
+                                    <option key={item.id} value={item.name}>
+                                        {item.name}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
                             <Form.Label>Product Price</Form.Label>
                             <Form.Control type="number" placeholder="Enter your product price" value={price}
                                 onChange={(e) => setPrice(e.target.value)} size='lg' />
@@ -57,8 +82,7 @@ const UpdateProduct = (props) => {
 
                         <Form.Group className="mb-3">
                             <Form.Label>Product Image</Form.Label>
-                            <Form.Control type="file" placeholder="Enter your email address" accept="image/*"
-                                onChange={(e) => setImage(e.target.files[0])} size='lg' />
+                            <Form.Control type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} size='lg' />
                         </Form.Group>
                     </Card.Body>
 
