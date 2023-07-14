@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState } from 'react';
+import { fetchCategories, deleteCategory } from '../../Api/CategoryApi';
 import { Container, Button, Modal } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
-import { fetchCategories } from '../../constants/Api';
 import UpdateCategory from './UpdateCategory';
 import AddCategory from './AddCategory';
 import Swal from 'sweetalert2';
-import axios from 'axios';
 
 const ViewCategory = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [updateCount, setUpdateCount] = useState(0);
     const [category, setCategory] = useState([]);
     const [show, setShow] = useState(false);
     const [btn, setBtn] = useState('');
@@ -20,9 +20,12 @@ const ViewCategory = () => {
 
     const handleHide = () => {
         setShow(false);
+        setTimeout(() => {
+            setUpdateCount(updateCount + 1);
+        }, 500);
     };
 
-    const handleSubmit = async () => {
+    const getCategories = async () => {
         if (window.location.pathname === '/admin/view-category') {
             try {
                 const response = await fetchCategories();
@@ -34,9 +37,12 @@ const ViewCategory = () => {
             }
         }
     };
-    handleSubmit();
 
-    const deleteCategory = (categoryId) => {
+    useEffect(() => {
+        getCategories();
+    }, [updateCount]);
+    
+    const deleteCategories = (categoryId) => {
         try {
             Swal.fire({
                 title: 'Are you sure you want to delete this category?',
@@ -47,12 +53,19 @@ const ViewCategory = () => {
                 icon: 'warning',
             }).then(async (result) => {
                 if (result.isConfirmed) {
-                    const result = await axios.delete(`${process.env.REACT_APP_API_URL}/api/delete-category/${categoryId}`);
-                    toast.success(result.data.message);
+                    try {
+                        const response = await deleteCategory(categoryId);
+                        toast.success(response.message);
+                        setUpdateCount(updateCount + 1);
+                    } catch (error) {
+                        console.error(error);
+                        toast.error(error.response?.data);
+                    }
                 }
             });
-        } catch (err) {
-            toast.error(err.response.data)
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data);
         }
     }
 
@@ -60,13 +73,12 @@ const ViewCategory = () => {
         <>
             <Container className="admin mt-5 h-100 bg-light rounded-4">
                 <ToastContainer />
-                <div className="d-flex justify-content-around">
+                <div className="d-flex justify-content-around mb-3">
                     <h3 className="fs-1 fw-normal text-black mt-4">Category List</h3>
                     <div className='mt-4'>
                         <Button className='btn btn-primary' onClick={() => { handleShow(selectedCategory); setBtn('addCategory') }}>Add Category</Button>
                     </div>
                 </div>
-                <hr />
                 <div className="table-responsive">
                     <table className='table table-bordered border-secondary align-middle text-center'>
                         <thead>
@@ -88,7 +100,7 @@ const ViewCategory = () => {
                                     <td>
                                         <div className='d-flex justify-content-center fa-2x'>
                                             <Button className='fa fa-pencil text-primary bg-transparent border-0' onClick={() => { handleShow(item); setBtn('updateCategory') }}></Button>
-                                            <Button className='fa fa-trash text-danger bg-transparent border-0' onClick={() => deleteCategory(item._id)}></Button>
+                                            <Button className='fa fa-trash text-danger bg-transparent border-0' onClick={() => deleteCategories(item._id)}></Button>
                                         </div>
                                     </td>
                                 </tr>

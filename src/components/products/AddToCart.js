@@ -1,19 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Modal, Button, Card, Row, Col, Container, Form } from "react-bootstrap";
 import { ToastContainer, toast } from 'react-toastify';
+import { processPayment } from '../../Api/PaymentApi';
 import ItemContext from '../../context/ItemContext';
 import { Elements } from '@stripe/react-stripe-js';
 import PaymentForm from '../payment/PaymentForm';
 import { loadStripe } from '@stripe/stripe-js';
 import { useCart } from "react-use-cart";
 import Swal from 'sweetalert2';
-import axios from 'axios';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 const AddToCart = () => {
     const { isEmpty, totalUniqueItems, items, updateItemQuantity, removeItem, cartTotal, emptyCart } = useCart();
-    const { secret, setSecret, shippingCharges, setShippingCharges } = useContext(ItemContext);
+    const { secret, setSecret, setShippingCharges } = useContext(ItemContext);
     const [show, setShow] = useState(false);
 
     useEffect(() => {
@@ -28,16 +28,12 @@ const AddToCart = () => {
         }
 
         async function fetchData() {
-            const url = `${process.env.REACT_APP_API_URL}/api/process-payment`;
             const data = {
                 amount: parseInt(cartTotal + deleveryCharge) * 100,
                 currency: 'usd',
             }
-            const headers = {
-                "Content-Type": "application/json",
-            };
 
-            const { clientSecret } = await axios.post(url, data, { headers: headers }).then((response) => response.data);
+            const { clientSecret } = await processPayment(data);
             setSecret(clientSecret);
         }
         fetchData();
@@ -163,7 +159,7 @@ const AddToCart = () => {
 
                         <Button className="btn btn-warning fw-bold d-flex mx-auto mb-4 border border-1 border-dark" size="lg" onClick={handleShow}>
                             <i className="fa fa-credit-card my-auto"></i>
-                            &nbsp; Proceed to Checkout &nbsp;
+                            &nbsp; Proceed to Checkout (${cartTotal})&nbsp;
                             <i className='fa fa-long-arrow-right my-auto'></i>
                         </Button>
                     </Col>
@@ -175,7 +171,7 @@ const AddToCart = () => {
                     <Modal.Title>Payment Gateway...</Modal.Title>
                 </Modal.Header>
                 <Elements stripe={stripePromise} options={{ clientSecret: secret }}>
-                    <PaymentForm shippingCharges={shippingCharges} />
+                    <PaymentForm />
                 </Elements>
             </Modal>
         </>

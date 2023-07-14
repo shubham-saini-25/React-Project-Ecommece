@@ -7,6 +7,7 @@ import HomeNavbar from './components/main/Navbar';
 import ContactForm from './components/main/Contact';
 import Products from './components/products/Products';
 import AddToCart from './components/products/AddToCart';
+import ViewOrders from './components/AdminPages/ViewOrders';
 import ForgetPassword from './components/Auth/FogetPassword';
 import ViewCategory from './components/AdminPages/ViewCategory';
 import ViewProducts from './components/AdminPages/ViewProducts';
@@ -26,6 +27,7 @@ const Routing = () => {
                 <Route path="/admin/view-category" element={<ViewCategory />} />
                 <Route path="/admin/view-products" element={<ViewProducts />} />
                 <Route path="/admin/view-customers" element={<ViewCustomers />} />
+                <Route path="/admin/view-orders" element={<ViewOrders />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forget-password" element={<ForgetPassword />} />

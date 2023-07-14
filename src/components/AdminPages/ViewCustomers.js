@@ -1,25 +1,45 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Container, Button, Modal } from 'react-bootstrap';
+import { fetchUsers, deleteUser } from '../../Api/UserApi';
 import { ToastContainer, toast } from 'react-toastify';
-import { Container, Button } from 'react-bootstrap';
+import UpdateUser from './UpdateUser';
 import Swal from 'sweetalert2';
-import axios from 'axios';
 
 const ViewCustomers = () => {
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [updateCount, setUpdateCount] = useState(0);
     const [users, setUsers] = useState([]);
+    const [show, setShow] = useState(false);
 
-    const handleSubmit = async () => {
+    const handleShow = (item) => {
+        setShow(true);
+        setSelectedUser(item);
+    }
+
+    const handleHide = () => {
+        setShow(false)
+        setTimeout(() => {
+            setUpdateCount(updateCount + 1);
+        }, 500);
+    };
+
+    const getUsers = async () => {
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-users`);
-            const result = data.user.filter(user => user.role === 'Customer');
-            setUsers(result);
-            toast.success(data.message);
+            const response = await fetchUsers();
+            if (response) {
+                const result = response.user.filter(user => user.role === 'Customer');
+                setUsers(result);
+            }
         } catch (err) {
             toast.error(err.response.data)
         }
     };
-    handleSubmit();
 
-    const deleteUser = (userId) => {
+    useEffect(() => {
+        getUsers();
+    }, [updateCount]);
+
+    const deleteUsers = (userId) => {
         try {
             Swal.fire({
                 title: 'Are you sure you want to delete this user?',
@@ -30,8 +50,14 @@ const ViewCustomers = () => {
                 icon: 'warning',
             }).then(async (result) => {
                 if (result.isConfirmed) {
-                    const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/api/delete-user/${userId}`);
-                    toast.success(data.message);
+                    try {
+                        const response = await deleteUser(userId);
+                        toast.success(response.message);
+                        setUpdateCount(updateCount + 1);
+                    } catch (error) {
+                        console.error(error);
+                        toast.error(error.response?.data);
+                    }
                 }
             });
         } catch (err) {
@@ -43,10 +69,9 @@ const ViewCustomers = () => {
         <>
             <Container className="admin mt-5 h-100 bg-light rounded-4">
                 <ToastContainer />
-                <div className="d-flex justify-content-center">
+                <div className="d-flex justify-content-center mb-3">
                     <h3 className="fs-1 fw-normal text-black mt-4">User List</h3>
                 </div>
-                <hr />
                 <div className="table-responsive">
                     <table className='table table-bordered border-secondary align-middle text-center'>
                         <thead>
@@ -55,7 +80,6 @@ const ViewCustomers = () => {
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Contact</th>
-                                <th>role</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -66,10 +90,10 @@ const ViewCustomers = () => {
                                     <td>{user.name}</td>
                                     <td>{user.email}</td>
                                     <td>{user.phoneNumber}</td>
-                                    <td>{user.role}</td>
                                     <td>
                                         <div className='d-flex justify-content-center fa-2x'>
-                                            <Button className='fa fa-trash text-danger bg-transparent border-0' onClick={() => deleteUser(user._id)}></Button>
+                                            <Button className='fa fa-pencil text-primary bg-transparent border-0' onClick={() => handleShow(user)}></Button>
+                                            <Button className='fa fa-trash text-danger bg-transparent border-0' onClick={() => deleteUsers(user._id)}></Button>
                                         </div>
                                     </td>
                                 </tr>
@@ -78,6 +102,15 @@ const ViewCustomers = () => {
                     </table>
                 </div>
             </Container>
+
+            <Modal show={show} onHide={handleHide} centered>
+                <Modal.Header closeButton onClick={handleHide}>
+                    <Modal.Title className='fs-2 mx-auto px-5'>Update Product</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <UpdateUser user={selectedUser} closeModal={handleHide} />
+                </Modal.Body>
+            </Modal>
         </>
     );
 }

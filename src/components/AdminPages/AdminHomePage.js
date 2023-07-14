@@ -1,23 +1,30 @@
 import React, { useEffect, useState } from 'react';
+import { getCategoriesCount } from '../../Api/CategoryApi';
+import { getProductsCount } from '../../Api/ProductApi';
 import { ToastContainer, toast } from 'react-toastify';
+import { getOrdersCount } from '../../Api/OrderApi';
+import { getUsersCount } from '../../Api/UserApi';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 const AdminHomePage = () => {
     const [totalCategoryCount, setTotalCategoryCount] = useState(0);
     const [totalProductCount, setTotalProductCount] = useState(0);
+    const [totalOrderCount, setTotalOrderrCount] = useState(0);
     const [totalUserCount, setTotalUserCount] = useState(0);
 
     const getCounts = async () => {
         try {
-            const category = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-category-count`);
-            setTotalCategoryCount(category.data.totalCategoryCount);
+            const category = await getCategoriesCount();
+            setTotalCategoryCount(category.totalCategoryCount);
 
-            const product = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-product-count`);
-            setTotalProductCount(product.data.totalProductCount);
+            const product = await getProductsCount();
+            setTotalProductCount(product.totalProductCount);
 
-            const user = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-user-count`);
-            setTotalUserCount(user.data.totalUserCount);
+            const order = await getOrdersCount();
+            setTotalOrderrCount(order.totalOrderCount);
+
+            const user = await getUsersCount();
+            setTotalUserCount(user.totalUserCount);
         } catch (err) {
             toast.error(err.response.message)
         }
@@ -63,6 +70,16 @@ const AdminHomePage = () => {
                                     <p className="card-title fs-4">Number of Total Users = <b>{totalUserCount}</b></p>
                                     <p className="card-text">The total number of Customers will display here.</p>
                                     <Link to={'/admin/view-customers'} className="btn btn-primary fw-bold">View Users</Link>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-md-4">
+                            <div className="card mb-4">
+                                <div className="card-header h3">Total Orders</div>
+                                <div className="card-body">
+                                    <p className="card-title fs-4">Number of Total Orders = <b>{totalOrderCount}</b></p>
+                                    <p className="card-text">The total number of Orders will display here.</p>
+                                    <Link to={'/admin/view-orders'} className="btn btn-primary fw-bold">View Orders</Link>
                                 </div>
                             </div>
                         </div>

@@ -2,10 +2,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Container, Form, Modal } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import ItemContext from '../../context/ItemContext';
+import { saveOrder } from '../../Api/OrderApi';
+import { sendInvoice } from '../../Api/Email';
 import { useCart } from 'react-use-cart';
 import html2pdf from 'html2pdf.js';
 import Swal from 'sweetalert2';
-import axios from 'axios';
 
 const PaymentInvoice = () => {
     const paymentIntentId = new URLSearchParams(window.location.search).get('payment_intent');
@@ -43,16 +44,13 @@ const PaymentInvoice = () => {
         const saveOrderDetails = async () => {
             const orderDetails = {
                 "order": JSON.parse(items),
-                "buyerId": authUserId,
+                "userId": authUserId,
                 "paymentIntentId": paymentIntentId
             };
-            const url = `${process.env.REACT_APP_API_URL}/api/save-order`;
-            const headers = {
-                "Content-Type": "application/json",
-            };
 
+            // save the order details after the successful payment
             try {
-                await axios.post(url, orderDetails, { headers: headers });
+                await saveOrder(orderDetails);
             } catch (error) {
                 console.error(error);
             }
@@ -117,10 +115,8 @@ const PaymentInvoice = () => {
 
         if (isValidEmail) {
             try {
-                const url = `${process.env.REACT_APP_API_URL}/api/send-invoice`;
-                const headers = { "Content-Type": "application/json" };
-                const res = await axios.post(url, customerInfo, { headers: headers });
-                toast.success(res.data.message);
+                const response = await sendInvoice(customerInfo);
+                toast.success(response.message);
                 setSendEmailBtnText('Send');
                 handleHide();
             } catch (err) {

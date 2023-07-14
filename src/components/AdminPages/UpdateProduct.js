@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Button, Card, Form } from 'react-bootstrap';
-import axios from 'axios';
+import { updateProduct } from '../../Api/ProductApi';
 
 const UpdateProduct = (props) => {
     const [name, setName] = useState('');
@@ -37,8 +37,8 @@ const UpdateProduct = (props) => {
         formData.append('image', image);
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/update-product/${props.product._id}`, formData);
-            toast.success(res.data.message);
+            const result = await updateProduct(props.product._id, formData);
+            toast.success(result.message);
         } catch (err) {
             toast.error(err.response.data);
         }

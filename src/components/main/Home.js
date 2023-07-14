@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchCategories } from '../../constants/Api';
+import { fetchCategories } from '../../Api/CategoryApi';
 import Carousel from 'react-bootstrap/Carousel';
 
 function Home() {

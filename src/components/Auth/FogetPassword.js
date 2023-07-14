@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
+import { updateUserPassword } from "../../Api/AuthApi";
 import ForgetPasswordImg from '../../images/login.png';
 import { Form, Button } from "react-bootstrap";
 import { FaUser, FaKey } from 'react-icons/fa';
 import { Link } from "react-router-dom";
-import axios from 'axios';
 
 function ForgetPassword() {
     const [email, setEmail] = useState("");
@@ -20,10 +20,11 @@ function ForgetPassword() {
         const userData = { email, password };
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/update-password`, userData);
-            toast.success(res.data['message']);
+            const result = await updateUserPassword(userData);
+            toast.success(result.message);
             setEmail('');
             setPassword('');
+            event.target.reset();
         } catch (err) {
             toast.error(err.response.data)
         }

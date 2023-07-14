@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Button, Card, Form } from 'react-bootstrap';
 import ItemContext from '../../context/ItemContext';
-import axios from 'axios';
+import { addCategory } from '../../Api/CategoryApi';
 
 const AddCategory = (props) => {
     const { authUserId } = useContext(ItemContext);
@@ -23,10 +23,10 @@ const AddCategory = (props) => {
         formData.append('createdBy', authUserId);
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/add-category`, formData);
-            toast.success(res.data.message);
-            setName('');
+            const result = await addCategory(formData);
+            toast.success(result.message);
             setImage(null);
+            setName('');
             event.target.reset();
         } catch (err) {
             toast.error(err.response.data)

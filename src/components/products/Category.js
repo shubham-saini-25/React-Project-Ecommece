@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Button, Row, Col } from 'react-bootstrap';
-import { fetchCategories } from '../../constants/Api';
+import { fetchCategories } from '../../Api/CategoryApi';
 import { useNavigate } from 'react-router-dom';
 
 const Category = () => {

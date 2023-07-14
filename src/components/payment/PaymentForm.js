@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
+import PaymentCards from "../../images/PaymentCards.png";
 import { ToastContainer, toast } from 'react-toastify';
 import ItemContext from "../../context/ItemContext";
 import { useCart } from "react-use-cart";
@@ -44,7 +45,7 @@ const PaymentForm = () => {
         const result = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                return_url: 'http://localhost:3000/payment-invoice',
+                return_url: `${window.location.origin}/payment-invoice`,
                 receipt_email: email,
             },
         });
@@ -65,7 +66,7 @@ const PaymentForm = () => {
                         <Card.Header>
                             <div className="text-center">
                                 <h5>Shipping and Payment details</h5>
-                                <img src="http://surl.li/gwolo" width={150} alt="cardsImg"></img>
+                                <img src={PaymentCards} width={150} alt="cardsImg"></img>
                             </div>
                         </Card.Header>
                         <Card.Body>

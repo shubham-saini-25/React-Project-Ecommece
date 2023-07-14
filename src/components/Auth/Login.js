@@ -5,7 +5,7 @@ import ItemContext from "../../context/ItemContext";
 import LoginUserImg from '../../images/login.png';
 import { Form, Button } from "react-bootstrap";
 import { FaUser, FaKey } from 'react-icons/fa';
-import axios from 'axios';
+import { userLogin } from "../../Api/AuthApi";
 
 function Login() {
     const { setAccessToken, setAuthUserId } = useContext(ItemContext);
@@ -22,19 +22,19 @@ function Login() {
         event.preventDefault();
 
         const userData = { email, password };
-        const url = `${process.env.REACT_APP_API_URL}/api/login`;
 
         try {
-            const res = await axios.post(url, userData);
-            localStorage.setItem('JWT_Token', res.data.token);
-            localStorage.setItem('AuthId', res.data.userId);
+            const response = await userLogin(userData);
+            localStorage.setItem('JWT_Token', response.token);
+            localStorage.setItem('UserRole', response.role);
+            localStorage.setItem('AuthId', response.userId);
             setLoginBtnText(<i className="fa fa-spinner fa-spin"></i>);
-            toast.success(res.data['message']);
-            setAccessToken(res.data.token);
-            setAuthUserId(res.data.userId);
+            toast.success(response['message']);
+            setAccessToken(response.token);
+            setAuthUserId(response.userId);
             setEmail('');
             setPassword('');
-            setTimeout(() => { res.data.role === "Customer" ? navigate('/') : navigate('/admin/home') }, 1500);
+            setTimeout(() => { response.role === "Customer" ? navigate('/') : navigate('/admin/home') }, 1500);
         } catch (err) {
             setLoginBtnText('Login')
             toast.error(err.response.data)

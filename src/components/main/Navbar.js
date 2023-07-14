@@ -4,7 +4,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import ItemContext from "../../context/ItemContext";
 import { useCart } from "react-use-cart";
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 function HomeNavbar() {
     const { search, setSearch, setAuthUserId } = useContext(ItemContext);
@@ -13,13 +12,15 @@ function HomeNavbar() {
     const { totalUniqueItems } = useCart();
 
     const removeToken = () => {
+        toast.success('User Logged Out Successfully!');
         localStorage.removeItem('JWT_Token');
         localStorage.removeItem('cartItems');
         localStorage.removeItem('cartTotal');
+        localStorage.removeItem('UserRole');
         localStorage.removeItem('AuthId');
         setAccessToken(null);
         setAuthUserId(null);
-        toast.success('User Logged Out Successfully!');
+        setUserRole(null);
     };
 
     const onClick = (e) => {
@@ -34,20 +35,11 @@ function HomeNavbar() {
 
     const onChange = (e) => setSearch(e.target.value);
 
-    const userId = localStorage.getItem('AuthId');
+    const role = localStorage.getItem('UserRole');
+
     useEffect(() => {
-        const getUser = async () => {
-            if (userId !== null && userId !== undefined) {
-                try {
-                    const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/get-user/${userId}`);
-                    setUserRole(res.data.user[0].role);
-                } catch (err) {
-                    toast.error(err.response.message)
-                }
-            }
-        }
-        getUser();
-    }, [userId]);
+        setUserRole(role);
+    }, [role]);
 
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -63,6 +55,7 @@ function HomeNavbar() {
                             <Link to="/admin/view-category" className="nav-link">View Category</Link>
                             <Link to="/admin/view-products" className="nav-link">View Product</Link>
                             <Link to="/admin/view-customers" className="nav-link">View Customers</Link>
+                            <Link to="/admin/view-orders" className="nav-link">View Orders</Link>
                         </>
                     ) : (
                         <>

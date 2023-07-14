@@ -138,6 +138,64 @@ router.post("/api/update-password", async (req, res) => {
     }
 });
 
+// API for update customer details
+router.post('/api/update-user/:id', async (req, res) => {
+    try {
+        const admin = await User.find();
+
+        if (admin[0].role === 'Admin') {
+            const userId = req.params.id;
+            const user = await User.findById(userId);
+
+            // Check if the user exists
+            if (!user) {
+                return res.status(404).send('User Not Found');
+            }
+
+            // Update the user based on the request body
+            if (req.body.name) {
+                user.name = req.body.name;
+            }
+            if (req.body.email) {
+                user.email = req.body.email;
+            }
+            if (req.body.phoneNumber) {
+                user.phoneNumber = req.body.phoneNumber;
+            }
+            if (req.body.password) {
+                user.password = req.body.password;
+            }
+
+            // Save the updated user data
+            const updatedUser = await user.save();
+
+            res.status(200).json({ user: updatedUser, message: 'User Updated Succesfully!' });
+        } else {
+            res.status(401).send('Unauthorized User');
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// API for deleting a user by ID
+router.delete('/api/delete-user/:id', async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const deleteUser = await User.findByIdAndDelete(userId);
+
+        if (!deleteUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'User deleted successfully!' });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // API for getting all customer details for Admin
 router.get('/api/get-users', async (req, res) => {
     try {

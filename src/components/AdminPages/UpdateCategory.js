@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Button, Card, Form } from 'react-bootstrap';
-import axios from 'axios';
+import { updateCategory } from '../../Api/CategoryApi';
 
 const UpdateCategory = (props) => {
     const [name, setName] = useState(props.category.name);
@@ -20,10 +20,10 @@ const UpdateCategory = (props) => {
         formData.append('image', image);
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/update-category/${props.category._id}`, formData);
-            toast.success(res.data.message);
-            setName('');
+            const result = await updateCategory(props.category._id, formData);
+            toast.success(result.message);
             setImage(null);
+            setName('');
             event.target.reset();
         } catch (err) {
             toast.error(err.response.data)

@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Button, Card, Form } from 'react-bootstrap';
 import ItemContext from '../../context/ItemContext';
-import axios from 'axios';
+import { addProduct } from '../../Api/ProductApi';
 
 const AddProduct = (props) => {
     const { authUserId } = useContext(ItemContext);
@@ -30,8 +30,8 @@ const AddProduct = (props) => {
         formData.append('createdBy', authUserId);
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/add-products`, formData);
-            toast.success(res.data.message);
+            const result = await addProduct(formData);
+            toast.success(result.message);
             setName('');
             setCategory('');
             setDescription('');

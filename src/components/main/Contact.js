@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Row, Col, Form, Button, Card, Container } from "react-bootstrap";
 import contactImg from '../../images/homeImages/contact.png';
 import { ToastContainer, toast } from 'react-toastify';
-import axios from 'axios';
+import { sendContactEmail } from '../../Api/Email';
 
 function ContactForm() {
     const [name, setName] = useState("");
@@ -18,18 +18,16 @@ function ContactForm() {
         e.preventDefault();
         setFormBtnStatus('Sending...');
 
-        const url = `${process.env.REACT_APP_API_URL}/api/send-mail`;
         const data = { name, email, message };
-        const headers = { 'Content-Type': 'application/json' };
 
         try {
-            const response = await axios.post(url, data, { headers: headers });
+            const response = await sendContactEmail(data);
             if (response) {
-                toast.success(response.data.message);
+                toast.success(response.message);
+                setFormBtnStatus('Send');
                 setName("");
                 setEmail("");
                 setMessage("");
-                setFormBtnStatus('Send');
             }
         } catch (err) {
             console.error(err);
